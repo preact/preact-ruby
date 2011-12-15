@@ -48,6 +48,10 @@
   <ItemGroup>
     <Compile Include="LessNeglectApi.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="Models\ActionCreateRequest.cs" />
+    <Compile Include="Models\PersonActionLink.cs" />
+    <Compile Include="Models\PersonAction.cs" />
+    <Compile Include="Models\Person.cs" />
     <Compile Include="Models\CoreResponse.cs" />
     <Compile Include="Models\MessageCreateRequest.cs" />
     <Compile Include="Models\CoreRequest.cs" />

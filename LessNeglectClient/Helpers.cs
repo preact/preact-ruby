@@ -52,14 +52,49 @@ namespace LessNeglect
 
         public static JObject GetApiResponse(string url, string method, JObject obj)
         {
-            List<KeyValuePair<string, string>> items = new List<KeyValuePair<string, string>>();
+            return GetApiResponse(url, method, BuildFormData(obj));
+        }
 
+        public static List<KeyValuePair<string, string>> BuildFormData(JObject obj, string parent = null)
+        {
+            List<KeyValuePair<string, string>> items = new List<KeyValuePair<string, string>>();
+            
             foreach (var v in obj.Properties())
             {
-                items.Add(new KeyValuePair<string, string>(v.Name, v.Value.ToString()));
+                if (v.Value.HasValues)
+                {
+                    foreach (var vv in v.Children())
+                    {
+                        JObject joInside = vv as JObject;
+                        if (joInside != null)
+                        {
+                            items.AddRange(BuildFormData(joInside, GetFormDataKey(parent, v.Name)));
+                        }
+                    }
+                }
+                else if (v.Value.Type == JTokenType.Array)
+                {
+                    var vvvv = v.Value;
+                }
+                else if (v.Value.Type != JTokenType.Null && v.Value.Type != JTokenType.None)
+                {
+                    items.Add(new KeyValuePair<string, string>(GetFormDataKey(parent, v.Name), v.Value.ToString()));
+                }
             }
 
-            return GetApiResponse(url, method, items);
+            return items;
+        }
+
+        public static string GetFormDataKey(string parent, string key)
+        {
+            if (string.IsNullOrEmpty(parent))
+            {
+                return key;
+            }
+            else
+            {
+                return string.Format("{0}[{1}]", parent, key);
+            }
         }
 
         // POST or PUT or something
