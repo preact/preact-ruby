@@ -61,7 +61,22 @@ namespace LessNeglect
             
             foreach (var v in obj.Properties())
             {
-                if (v.Value.HasValues)
+                if (v.Value.Type == JTokenType.Array)
+                {
+                    int index = 0;
+                    // iterate through the array
+                    foreach (var vv in v.Value)
+                    {
+                        JObject joInside = vv as JObject;
+                        if (joInside != null)
+                        {
+                            items.AddRange(BuildFormData(joInside, GetFormDataKey(parent + "[" + v.Name + "]", index.ToString())));
+                        }
+
+                        index++;
+                    }
+                } 
+                else if (v.Value.HasValues)
                 {
                     foreach (var vv in v.Children())
                     {
@@ -71,10 +86,6 @@ namespace LessNeglect
                             items.AddRange(BuildFormData(joInside, GetFormDataKey(parent, v.Name)));
                         }
                     }
-                }
-                else if (v.Value.Type == JTokenType.Array)
-                {
-                    var vvvv = v.Value;
                 }
                 else if (v.Value.Type != JTokenType.Null && v.Value.Type != JTokenType.None)
                 {
