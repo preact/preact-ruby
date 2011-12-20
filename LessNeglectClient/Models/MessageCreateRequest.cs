@@ -29,25 +29,11 @@ namespace LessNeglect
 {
     public class MessageCreateRequest : CoreRequest
     {
-        [JsonProperty(PropertyName = "ticket_code")]
-        public string TicketCode { get; set; }
+        [JsonProperty(PropertyName = "person")]
+        public Person Person { get; set; }
 
-        [JsonProperty(PropertyName = "person_email")]
-        public string PersonEmail { get; set; }
+        [JsonProperty(PropertyName = "message")]
+        public Message Message { get; set; }
 
-        [JsonProperty(PropertyName = "person_name")]
-        public string PersonName { get; set; }
-
-        [JsonProperty(PropertyName = "person_id")]
-        public string PersonExternalId { get; set; }
-
-        [JsonProperty(PropertyName = "subject")]
-        public string Subject { get; set; }
-
-        [JsonProperty(PropertyName = "body")]
-        public string Body { get; set; }
-
-        [JsonProperty(PropertyName = "label")]
-        public string Label { get; set; }
     }
 }
