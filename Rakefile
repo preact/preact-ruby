@@ -17,9 +17,9 @@ Jeweler::Tasks.new do |gem|
   gem.name = "lessneglect"
   gem.homepage = "http://github.com/cgooley/lessneglect"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
-  gem.email = "c@thegooley.com"
+  gem.summary = "LessNeglect client API"
+  gem.description = "API library to allow you to connect and submit messages and actions to your LessNeglect project account"
+  gem.email = "gooley@lessneglect.com"
   gem.authors = ["Christopher Gooley"]
   # dependencies defined in Gemfile
 end
