@@ -34,8 +34,8 @@ namespace LessNeglect
 {
     public class LessNeglectApi
     {
-        private static string api_endpoint = "http://beta.lessneglect.com/api/v1";
-        //private static string api_endpoint = "http://test.lessneglect.com:4000/api/v1";
+        private static string api_endpoint = "http://beta.lessneglect.com/api/v2";
+        //private static string api_endpoint = "http://test.lessneglect.com:4000/api/v2";
         private static Encoding encoding = Encoding.UTF8;
 
         private string ProjectCode { get; set; }
@@ -74,16 +74,16 @@ namespace LessNeglect
             // sign the request 
             request.SignRequest(ProjectCode, ProjectApiSecret);
 
-            string url = String.Format("{0}/messages", api_endpoint);
+            string url = String.Format("{0}/events", api_endpoint);
             return new CoreResponse(Helpers.GetApiResponse(url, "POST", JObject.FromObject(request)));
         }
 
-        public CoreResponse CreatePersonAction(PersonActionCreateRequest request)
+        public CoreResponse CreateActionEvent(ActionEventCreateRequest request)
         {
             // sign the request 
             request.SignRequest(ProjectCode, ProjectApiSecret);
 
-            string url = String.Format("{0}/actions", api_endpoint);
+            string url = String.Format("{0}/events", api_endpoint);
             JObject param = JObject.FromObject(request);
             return new CoreResponse(Helpers.GetApiResponse(url, "POST", param));
         }

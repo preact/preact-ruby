@@ -30,6 +30,9 @@ namespace LessNeglect
     [JsonObject(MemberSerialization.OptIn)]
     public class Message
     {
+        [JsonProperty(PropertyName = "klass")]
+        public string Klass = "message";
+
         [JsonProperty(PropertyName = "subject")]
         public string Subject { get; set; }
 

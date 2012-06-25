@@ -28,16 +28,22 @@ using Newtonsoft.Json.Linq;
 namespace LessNeglect
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public class PersonAction
+    public class ActionEvent
     {
-        [JsonProperty(PropertyName = "note")]
-        public string Note { get; set; }
+        [JsonProperty(PropertyName = "klass")]
+        public string Klass = "actionevent";
 
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
-        [JsonProperty(PropertyName = "email_subject")]
-        public string EmailSubject { get; set; }
+        [JsonProperty(PropertyName = "note")]
+        public string Note { get; set; }
+
+        [JsonProperty(PropertyName = "magnitude")]
+        public int Magnitude { get; set; }
+
+        //[JsonProperty(PropertyName = "email_subject")]
+        //public string EmailSubject { get; set; }
 
         [JsonProperty(PropertyName = "links")]
         public PersonActionLink[] Links { get; set; }
