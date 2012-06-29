@@ -3,7 +3,8 @@ require 'lessneglect/methods'
 
 require 'lessneglect/objects/api_object'
 require 'lessneglect/objects/person'
-require 'lessneglect/objects/action'
+require 'lessneglect/objects/event'
+require 'lessneglect/objects/action_event'
 require 'lessneglect/objects/message'
 
 
@@ -12,7 +13,7 @@ class LessNeglectApi
 	class Client
 
 		def initialize(opts = {})
-	      @base_url = "http://beta.lessneglect.com/api/v1"
+	      @base_url = "http://test.lessneglect.com:4000/api/v2"
 
 	      @project_code = opts[:code]
 	      @project_secret = opts[:secret]

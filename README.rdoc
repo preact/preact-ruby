@@ -4,6 +4,5 @@ Gem to allow your ruby app to submit messages and actions to your LessNeglect pr
 
 == Copyright
 
-Copyright (c) 2011-2012 Christopher Gooley. See LICENSE.txt for
-further details.
+Copyright (c) 2011-2012 Christopher Gooley. See LICENSE.txt for further details.
 
