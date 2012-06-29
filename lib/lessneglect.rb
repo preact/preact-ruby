@@ -13,7 +13,7 @@ class LessNeglectApi
 	class Client
 
 		def initialize(opts = {})
-	      @base_url = "http://test.lessneglect.com:4000/api/v2"
+	      @base_url = "http://beta.lessneglect.com/api/v2"
 
 	      @project_code = opts[:code]
 	      @project_secret = opts[:secret]
