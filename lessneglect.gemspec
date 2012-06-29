@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "lessneglect"
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Christopher Gooley"]
-  s.date = "2012-04-16"
+  s.date = "2012-06-29"
   s.description = "API library to allow you to connect and submit messages and actions to your LessNeglect project account"
   s.email = "gooley@lessneglect.com"
   s.extra_rdoc_files = [
@@ -30,8 +30,9 @@ Gem::Specification.new do |s|
     "lib/lessneglect.rb",
     "lib/lessneglect/api_helpers.rb",
     "lib/lessneglect/methods.rb",
-    "lib/lessneglect/objects/action.rb",
+    "lib/lessneglect/objects/action_event.rb",
     "lib/lessneglect/objects/api_object.rb",
+    "lib/lessneglect/objects/event.rb",
     "lib/lessneglect/objects/message.rb",
     "lib/lessneglect/objects/person.rb",
     "spec/lessneglect_spec.rb",
