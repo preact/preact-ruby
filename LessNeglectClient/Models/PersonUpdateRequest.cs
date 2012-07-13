@@ -27,19 +27,9 @@ using Newtonsoft.Json.Linq;
 
 namespace LessNeglect
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    public class Person
+    public class PersonUpdateRequest : CoreRequest
     {
-        [JsonProperty(PropertyName = "email")]
-        public string Email { get; set; }
-
-        [JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        [JsonProperty(PropertyName = "external_identifier")]
-        public string ExternalId { get; set; }
-
-        [JsonProperty(PropertyName = "properties")]
-        public Dictionary<string, object> Properties { get; set; }
+        [JsonProperty(PropertyName = "person")]
+        public Person Person { get; set; }
     }
 }
