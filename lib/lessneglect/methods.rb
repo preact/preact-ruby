@@ -18,6 +18,14 @@ class LessNeglectApi::Client
       data = post_request("/events", params)
     end
 
+    def update_person(person)
+      params = {
+        :person => person.as_json
+      }
+
+      data = post_request("/people", params)
+    end
+
     def tickets
       data = get_request("/tickets")
     end
