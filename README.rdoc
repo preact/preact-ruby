@@ -1,0 +1,8 @@
+= lessneglect
+
+Gem to allow your ruby app to submit messages and actions to your LessNeglect project account.
+
+== Copyright
+
+Copyright (c) 2011-2012 Christopher Gooley. See LICENSE.txt for further details.
+
