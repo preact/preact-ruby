@@ -27,12 +27,12 @@ using Newtonsoft.Json.Linq;
 
 namespace LessNeglect
 {
-    public class PersonActionCreateRequest : CoreRequest
+    public class ActionEventCreateRequest : CoreRequest
     {
         [JsonProperty(PropertyName = "person")]
         public Person Person { get; set; }
 
-        [JsonProperty(PropertyName = "person_action")]
-        public PersonAction Action { get; set; }
+        [JsonProperty(PropertyName = "event")]
+        public ActionEvent Event { get; set; }
     }
 }

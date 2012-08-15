@@ -32,7 +32,7 @@ namespace LessNeglect
         [JsonProperty(PropertyName = "person")]
         public Person Person { get; set; }
 
-        [JsonProperty(PropertyName = "message")]
+        [JsonProperty(PropertyName = "event")]
         public Message Message { get; set; }
 
     }

@@ -49,6 +49,7 @@
     <Compile Include="LessNeglectApi.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Models\ActionCreateRequest.cs" />
+    <Compile Include="Models\PersonUpdateRequest.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\PersonActionLink.cs" />
     <Compile Include="Models\PersonAction.cs" />

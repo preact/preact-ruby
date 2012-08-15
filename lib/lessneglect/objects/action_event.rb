@@ -1,8 +1,7 @@
 class LessNeglectApi
-	class Action < ApiObject
+	class ActionEvent < Event
 
-		attr_accessor :name, :note, :email_subject
-    attr_accessor :links
+    attr_accessor :note, :links
 
     def add_link(name, href)
       self.links ||= []
@@ -10,12 +9,11 @@ class LessNeglectApi
     end
 
     def as_json(options={})
-      {
-        :name => self.name,
+      super.merge({
+        :klass => "actionevent",
         :note => self.note,
-        :email_subject => self.email_subject,
         :links => self.links.nil? ? nil : self.links.as_json
-      }.as_json(options)
+      }).as_json(options)
     end
 
 	end

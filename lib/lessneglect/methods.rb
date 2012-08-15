@@ -1,21 +1,21 @@
 class LessNeglectApi::Client
 	
-    def message_create(person, message)
+    def create_message(person, message)
       params = {
         :person => person.as_json,
-        :message => message.as_json
+        :event => message.as_json
       }
       
-      data = post_request("/messages", params)
+      data = post_request("/events", params)
     end
     
-    def action_create(person, action)
+    def create_action_event(person, action_event)
     	params = {
         :person => person.as_json,
-        :person_action => action.as_json
+        :event => action_event.as_json
       }
 
-      data = post_request("/actions", params)
+      data = post_request("/events", params)
     end
 
     def tickets

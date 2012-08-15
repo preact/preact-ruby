@@ -38,5 +38,8 @@ namespace LessNeglect
 
         [JsonProperty(PropertyName = "external_identifier")]
         public string ExternalId { get; set; }
+
+        [JsonProperty(PropertyName = "properties")]
+        public Dictionary<string, object> Properties { get; set; }
     }
 }
