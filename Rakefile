@@ -15,7 +15,7 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "lessneglect"
-  gem.homepage = "http://github.com/cgooley/lessneglect-ruby"
+  gem.homepage = "http://github.com/lessneglect/lessneglect-ruby"
   gem.license = "MIT"
   gem.summary = "LessNeglect client API"
   gem.description = "API library to allow you to connect and submit messages and actions to your LessNeglect project account"
