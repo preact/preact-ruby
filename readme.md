@@ -1,6 +1,6 @@
-LessNeglect
+LessNeglect Ruby Client
 ===
-Allow your ruby app to easily submit server-side messages and events to LessNeglect.
+Allow your Ruby app to easily submit server-side messages and events to LessNeglect.
 
 Installation
 ---
@@ -106,10 +106,7 @@ end
 Helper Usage
 --
 ```ruby
-Neglect.log_event(user, "uploaded-media")
+Neglect.log_event(@current_user, "uploaded-media")
 ```
 
-== Copyright
-
-Copyright (c) 2011-2012 Christopher Gooley. See LICENSE.txt for further details.
-
+Copyright (c) 2011-2012 Christopher Gooley, Less Neglect. See LICENSE.txt for further details.
