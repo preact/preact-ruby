@@ -43,68 +43,10 @@ Sample Helper Class
 
 We suggest you create a simple helper class such as /lib/neglect.rb to convert your User model into a LessNeglect Person and submit the event.
 
-```ruby
-class Neglect
-  
-  def self.api
-    @@api ||= LessNeglectApi::Client.new({
-        :code => "asdfasdf",
-        :secret => "1234asdfasdf1234"
-      })
-  end
+Here's a sample gist of what the helper could look like:
+https://gist.github.com/3738364
 
-  def self.log_event(user, event_name, extras = {})
-    return if user.nil? || user[:impersonating]
-    return if Rails.env == "development"
-    
-    begin
-      person = LessNeglectApi::Person.new({
-          :name => user.name,
-          :email => user.email,
-          :external_identifer => user.id,
-          :properties => {
-            :account_level => user.account_level,
-            :is_paying => user.paying?,
-            :created_at => user.created_at.to_i
-          }
-        })
-
-      event = LessNeglectApi::ActionEvent.new({
-          :name => event_name
-        }.merge(extras))
-
-      api.create_action_event(person, event)
-    rescue
-      puts "error logging to LN"
-    end
-  end
-
-  def self.update_person(user)
-    return if Rails.env == "development"
-    
-    begin
-      person = LessNeglectApi::Person.new({
-          :name => user.name,
-          :email => user.email,
-          :external_identifer => user.id,
-          :properties => {
-            :account_level => user.account_level,
-            :is_paying => user.paying?,
-            :created_at => user.created_at.to_i
-          }
-        })
-
-      api.update_person(person)
-    rescue
-      puts "error logging to LN"
-    end
-  end
-
-end
-```
-
-Helper Usage
---
+then you can make one-line event logs:
 ```ruby
 Neglect.log_event(@current_user, "uploaded-media")
 ```
