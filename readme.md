@@ -48,6 +48,8 @@ https://gist.github.com/3738364
 
 then you can make one-line event logs:
 ```ruby
+require 'neglect'
+
 Neglect.log_event(@current_user, "uploaded-media")
 ```
 
