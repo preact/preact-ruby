@@ -1,18 +1,37 @@
-class LessNeglectApi::Client
+class LessNeglectApi
+  class Client
 	
     def create_message(person, message)
+      return false if person.nil? || message.nil?
+      message[:klass] = "message"
+      message[:timestamp] ||= Time.now.to_f
+
       params = {
-        :person => person.as_json,
-        :event => message.as_json
+        :person => person,
+        :event => message
       }
       
       data = post_request("/events", params)
     end
     
-    def create_action_event(person, action_event)
+    def create_event(person, event)
+      return false if person.nil? || event.nil?
+
+      if event.is_a?(String)
+        # convert into a hash with the name of the event
+        event = {
+          :name => event
+        }
+      elsif !event.is_a?(Hash)
+        # don't do anything if it's not a string or hash
+        return false
+      end
+
+      event[:timestamp] ||= Time.now.to_f
+
     	params = {
-        :person => person.as_json,
-        :event => action_event.as_json
+        :person => person,
+        :event => event
       }
 
       data = post_request("/events", params)
@@ -26,8 +45,5 @@ class LessNeglectApi::Client
       data = post_request("/people", params)
     end
 
-    def tickets
-      data = get_request("/tickets")
-    end
-
+  end
 end
