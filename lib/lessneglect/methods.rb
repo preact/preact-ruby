@@ -14,7 +14,7 @@ class LessNeglectApi
       data = post_request("/events", params)
     end
     
-    def create_event(person, event)
+    def create_event(person, event, custom = nil)
       return false if person.nil? || event.nil?
 
       if event.is_a?(String)
@@ -28,6 +28,11 @@ class LessNeglectApi
       end
 
       event[:timestamp] ||= Time.now.to_f
+
+      if custom && custom.is_a?(Hash)
+        event[:extras] ||= {}
+        event[:extras].merge!(custom)
+      end
 
     	params = {
         :person => person,
