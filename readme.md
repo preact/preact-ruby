@@ -72,7 +72,7 @@ end
 ```ruby
 LessNeglect.message(User.find(1), "I'm having trouble getting my old answers back. Can you help me?")
 
-LessNeglect.log_event(User.find(1), 'restored_anser_data')
+LessNeglect.log_event(User.find(1), 'restored_answer_data')
 ```
 
 Copyright (c) 2011-2012 Christopher Gooley, Less Neglect. See LICENSE.txt for further details.
