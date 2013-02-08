@@ -44,7 +44,7 @@ module LessNeglect
     end
     
     def base_uri
-      "#{scheme}://#{host}#{base_path}"
+      "#{scheme}://#{code}:#{secret}@#{host}#{base_path}"
     end
     
     def convert_to_person(user)

@@ -26,7 +26,7 @@ LessNeglect.configure do |config|
   
   # Uncomment this this line to customize the data sent with your Person objects.
   # Your procedure should return a Hash of attributes
-  # config.person_builder = lambda {|user| user.to_person}
+  # config.person_builder = lambda {|user| {:keys => :values}}
 end
 ```
 
@@ -48,13 +48,10 @@ person = {
 LessNeglect.log_event(person, 'upgraded', :price_paid => '25.00')
 ```
 
-Rails 3 Usage
----
-In your `User` model, you can define a `to_person` method returning a Hash. LessNeglect will detect if this method is defined and use it for API calls, e.g.
+In your `User` model, you can define a `to_person` method returning a Hash. LessNeglect will detect and use this method on users passed to its logging events.
 
 ```ruby
 class User < ActiveRecord::Base
-
   def to_person
     {
       :name => self.name,
@@ -67,8 +64,11 @@ class User < ActiveRecord::Base
       }
     }
   end
-  
 end
+```
+
+```ruby
+LessNeglect.log_event(User.find(1), 'recovered_password')
 ```
 
 Copyright (c) 2011-2012 Christopher Gooley, Less Neglect. See LICENSE.txt for further details.
