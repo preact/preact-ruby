@@ -38,16 +38,12 @@ class LessNeglect::Client
     def post_request(method, params={})
       params = sign_request(params)
       
-      puts "post_request method:#{method.inspect} params:#{params.inspect}"
-      
       res = RestClient.post LessNeglect.configuration.base_uri + method, params.to_json, :content_type => :json, :accept => :json
       data = MultiJson.decode(res.body)
     end
 
     def get_request(method, params={})
       params = sign_request(params)
-      
-      puts "get_request method:#{method.inspect} params:#{params.inspect}"
       
       res = RestClient.get LessNeglect.configuration.base_uri + method, { :params => params }
       data = MultiJson.decode(res.body)

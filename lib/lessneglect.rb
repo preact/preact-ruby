@@ -30,18 +30,13 @@ module LessNeglect
       return if configuration.disabled?
       return if user.nil?
  
-      begin
-        person = configuration.convert_to_person(user)
-        puts person.inspect
+      person = configuration.convert_to_person(user)
  
-        event = ActionEvent.new({
-            :name => event_name
-          }.merge(extras))
+      event = ActionEvent.new({
+          :name => event_name
+        }.merge(extras))
  
-        client.create_action_event(person, event)
-      # rescue Exception => e
-        # puts "error logging to Less Neglect"
-      end
+      client.create_action_event(person, event)
     end
       
     def update_person(user)
@@ -49,11 +44,7 @@ module LessNeglect
       return if configuration.disabled?
       return if user.nil?
       
-      begin
-        client.update_person(configuration.convert_to_person(user))
-      rescue
-        puts "error logging to LN"
-      end
+      client.update_person(configuration.convert_to_person(user))
     end
     
     protected
