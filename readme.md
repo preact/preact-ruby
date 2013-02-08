@@ -14,7 +14,7 @@ gem 'lessneglect', :git => 'git://github.com/zmillman/lessneglect-ruby.git'
 Configuration
 ---
 
-Configure LessNeglect with your API credentials. (This should go in an initializer in Rails applications)
+Configure LessNeglect with your API credentials. (This should go in an initializer file named `/config/initializers/lessneglect.rb` in Rails applications)
 
 ```ruby
 LessNeglect.configure do |config|
@@ -70,7 +70,7 @@ end
 ```
 
 ```ruby
-LessNeglect.message(user.find(1), "I'm having trouble getting my old answers back. Can you help me?")
+LessNeglect.message(User.find(1), "I'm having trouble getting my old answers back. Can you help me?")
 
 LessNeglect.log_event(User.find(1), 'restored_anser_data')
 ```
