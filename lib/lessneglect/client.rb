@@ -28,10 +28,6 @@ class LessNeglect::Client
 
       data = post_request("/people", params)
     end
-
-    def tickets
-      data = get_request("/tickets")
-    end
     
     private
 
