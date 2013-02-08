@@ -48,4 +48,27 @@ person = {
 LessNeglect.log_event(person, 'upgraded', :price_paid => '25.00')
 ```
 
+Rails 3 Usage
+---
+In your `User` model, you can define a `to_person` method returning a Hash. LessNeglect will detect if this method is defined and use it for API calls, e.g.
+
+```ruby
+class User < ActiveRecord::Base
+
+  def to_person
+    {
+      :name => self.name,
+      :email => self.email,
+      :external_identifer => self.id,
+      :properties => {
+        :account_level => self.account_level,
+        :is_paying => self.paying_customer?,
+        :created_at => self.created_at.to_i
+      }
+    }
+  end
+  
+end
+```
+
 Copyright (c) 2011-2012 Christopher Gooley, Less Neglect. See LICENSE.txt for further details.
