@@ -8,47 +8,71 @@ Installation
 In your Gemfile:
 
 ```ruby
-gem 'lessneglect'
+gem 'lessneglect', :git => 'git://github.com/zmillman/lessneglect-ruby.git'
+```
+
+Configuration
+---
+
+Configure LessNeglect with your API credentials. (This should go in an initializer file named `/config/initializers/lessneglect.rb` in Rails applications)
+
+```ruby
+LessNeglect.configure do |config|
+  config.code   = 'abcdefg'           # required
+  config.secret = '1234asdfasdf1234'  # required
+  
+  # Disable in Rails development environments
+  # config.disabled = (Rails.env != "development")
+  
+  # Uncomment this this line to customize the data sent with your Person objects.
+  # Your procedure should return a Hash of attributes
+  # config.person_builder = lambda {|user| {:keys => :values}}
+end
 ```
 
 Usage
 ---
 
 ```ruby
-person = LessNeglectApi::Person.new({
-    :name => "Christopher Gooley",
-    :email => "gooley@foliohd.com",
-    :external_identifer => "gooley",
-    :properties => {
-      :account_level => "Pro",
-      :is_paying => True,
-      :created_at => 1347060566
-    }
-  })
+person = {
+  :name => "Christopher Gooley",
+  :email => "gooley@foliohd.com",
+  :external_identifer => "gooley",
+  :properties => {
+    :account_level => "Pro",
+    :is_paying => true,
+    :created_at => 1347060566
+  }
+}
 
-event = LessNeglectApi::ActionEvent.new({
-    :name => "upgraded"
-  }.merge(extras))
-
-api = LessNeglectApi::Client.new({
-    :code => "abcdefg",
-    :secret => "1234asdfasdf1234"
-  })
-
-api.create_action_event(person, event)
+LessNeglect.log_event(person, 'upgraded', :price_paid => '25.00')
 ```
 
-Sample Helper Class
+ActiveRecord Integration
 ---
+In your `User` model, you can define a `to_person` method returning a Hash. LessNeglect will detect and use this method on users passed to its logging events.
 
-We suggest you create a simple helper class such as /lib/neglect.rb to convert your User model into a LessNeglect Person and submit the event.
-
-Here's a sample gist of what the helper could look like:
-https://gist.github.com/3738364
-
-then you can make one-line event logs:
 ```ruby
-Neglect.log_event(@current_user, "uploaded-media")
+class User < ActiveRecord::Base
+  def to_person
+    {
+      :name => self.name,
+      :email => self.email,
+      :external_identifer => self.id,
+      :properties => {
+        :account_level => self.account_level,
+        :is_paying => self.paying_customer?,
+        :created_at => self.created_at.to_i
+      }
+    }
+  end
+end
+```
+
+```ruby
+LessNeglect.message(User.find(1), "I'm having trouble getting my old answers back. Can you help me?")
+
+LessNeglect.log_event(User.find(1), 'restored_answer_data')
 ```
 
 Copyright (c) 2011-2012 Christopher Gooley, Less Neglect. See LICENSE.txt for further details.
