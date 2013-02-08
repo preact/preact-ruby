@@ -31,12 +31,11 @@ module LessNeglect
       return if user.nil?
  
       person = configuration.convert_to_person(user)
- 
       event = ActionEvent.new({
           :name => event_name
         }.merge(extras))
  
-      client.create_action_event(person, event)
+      client.create_event(person, event)
     end
       
     def update_person(user)
@@ -45,6 +44,21 @@ module LessNeglect
       return if user.nil?
       
       client.update_person(configuration.convert_to_person(user))
+    end
+    
+    # message - a Hash with the following required keys
+    #           :subject - subject of the message
+    #           :body - body of the message
+    #           * any additional keys are used as extra options for the message (:note, etc.)
+    def message(user, message = {})
+      # Don't send requests when disabled
+      return if configuration.disabled?
+      return if user.nil?
+      
+      person = configuration.convert_to_person(user)
+      message_obj = Message.new(message)
+      
+      client.create_event(person, message_obj)
     end
     
     protected

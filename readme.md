@@ -40,7 +40,7 @@ person = {
   :external_identifer => "gooley",
   :properties => {
     :account_level => "Pro",
-    :is_paying => True,
+    :is_paying => true,
     :created_at => 1347060566
   }
 }
@@ -48,6 +48,8 @@ person = {
 LessNeglect.log_event(person, 'upgraded', :price_paid => '25.00')
 ```
 
+ActiveRecord Integration
+---
 In your `User` model, you can define a `to_person` method returning a Hash. LessNeglect will detect and use this method on users passed to its logging events.
 
 ```ruby
@@ -68,7 +70,9 @@ end
 ```
 
 ```ruby
-LessNeglect.log_event(User.find(1), 'recovered_password')
+LessNeglect.message(user.find(1), "I'm having trouble getting my old answers back. Can you help me?")
+
+LessNeglect.log_event(User.find(1), 'restored_anser_data')
 ```
 
 Copyright (c) 2011-2012 Christopher Gooley, Less Neglect. See LICENSE.txt for further details.
