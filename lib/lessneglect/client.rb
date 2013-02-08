@@ -36,29 +36,23 @@ class LessNeglect::Client
     private
 
     def post_request(method, params={})
-      params = sign_request(params)
+      params = prepare_request_params(params)
       
       res = RestClient.post LessNeglect.configuration.base_uri + method, params.to_json, :content_type => :json, :accept => :json
       data = MultiJson.decode(res.body)
     end
 
     def get_request(method, params={})
-      params = sign_request(params)
+      params = prepare_request_params(params)
       
       res = RestClient.get LessNeglect.configuration.base_uri + method, { :params => params }
       data = MultiJson.decode(res.body)
     end
     
-    def sign_request(params = {})
-      timestamp = Time.now.to_i
-      token = rand(36**12).to_s(36)
-      signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('sha256'), LessNeglect.configuration.secret, "#{timestamp}#{token}")
-
+    def prepare_request_params(params = {})
       params.merge({
-        :project_code => LessNeglect.configuration.code,
-        :signature => signature,
-        :token => token,
-        :timestamp => timestamp,
+        # :user => LessNeglect.configuration.code,
+        # :password => LessNeglect.configuration.secret,
         :format => "json"
       })
     end
