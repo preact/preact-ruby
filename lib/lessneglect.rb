@@ -39,7 +39,7 @@ module LessNeglect
       client.create_action_event(person, event)
     end
       
-    def update_person(user)
+    def prepare_request_paramste_person(user)
       # Don't send requests when disabled
       return if configuration.disabled?
       return if user.nil?
