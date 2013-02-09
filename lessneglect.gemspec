@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.version = LessNeglect::VERSION
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Christopher Gooley"]
+  s.authors = ["Christopher Gooley", "Zach Millman"]
   s.date = "2013-01-01"
   s.description = "API library to allow you to connect and submit messages and actions to your LessNeglect project account"
   s.email = "gooley@lessneglect.com"
