@@ -39,8 +39,9 @@ end
 task :default => :spec
 
 require 'rake/rdoctask'
+require File.expand_path("../lib/lessneglect/version", __FILE__)
 Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
+  version = LessNeglect::VERSION
 
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "lessneglect #{version}"
