@@ -45,7 +45,12 @@ person = {
   }
 }
 
+#common event examples:
+LessNeglect.log_event(person, 'logged-in')
 LessNeglect.log_event(person, 'upgraded', :price_paid => '25.00')
+LessNeglect.log_event(person, "uploaded:file", :note => "awesome_resume.pdf")
+LessNeglect.log_event(person, "uploaded:image", :note => "cool_image_12.jpg")
+LessNeglect.log_event(person, 'purchased-item', {:note => "black shoes", :extras => {:revenue => 25.00, :size => "mens 13"})
 ```
 
 ActiveRecord Integration
@@ -73,6 +78,7 @@ end
 LessNeglect.message(User.find(1), "I'm having trouble getting my old answers back. Can you help me?")
 
 LessNeglect.log_event(User.find(1), 'restored_answer_data')
+LessNeglect.log_event(User.find(1), 'updated-profile', :extras => {:twitter => "@gooley"})
 ```
 
 Copyright (c) 2011-2012 Christopher Gooley, Less Neglect. See LICENSE.txt for further details.
