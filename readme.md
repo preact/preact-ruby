@@ -8,7 +8,7 @@ Installation
 In your Gemfile:
 
 ```ruby
-gem 'lessneglect', :git => 'git://github.com/zmillman/lessneglect-ruby.git'
+gem 'lessneglect', :git => 'git://github.com/lessneglect/lessneglect-ruby.git'
 ```
 
 Configuration
