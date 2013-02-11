@@ -25,7 +25,7 @@ class LessNeglect::Client
     def post_request(method, params={})
       params = prepare_request_params(params)
       
-      puts "post_request to #{LessNeglect.configuration.base_uri + method} with #{params.inspect}"
+      logger.debug "[LessNeglect] post_request to #{LessNeglect.configuration.base_uri + method} with #{params.inspect}"
       
       res = RestClient.post LessNeglect.configuration.base_uri + method, params.to_json, :content_type => :json, :accept => :json
       data = MultiJson.decode(res.body)

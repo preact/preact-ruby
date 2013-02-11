@@ -7,6 +7,8 @@ require 'lessneglect/objects/event'
 require 'lessneglect/objects/action_event'
 require 'lessneglect/objects/message'
 
+require 'logger'
+
 module LessNeglect
 
   class << self
@@ -15,6 +17,8 @@ module LessNeglect
     attr_accessor :configuration
     
     attr_accessor :default_client
+    
+    attr_accessor :logger
 
     # Call this method to modify the configuration in your initializers
     def configure
@@ -22,13 +26,21 @@ module LessNeglect
 
       yield(configuration) if block_given?
       
+      # Configure logger.  Default to use Rails
+      self.logger ||= configuration.logger || (defined?(Rails) ? Rails.logger : Logger.new(STDOUT))
+      
       raise StandardError.new "Must specify project code and secret when configuring the LessNeglect api client" unless configuration.valid?
     end
     
     def log_event(user, event_name, extras = {})
       # Don't send requests when disabled
-      return if configuration.disabled?
-      return if user.nil?
+      if configuration.disabled?
+        logger.info "[LessNeglect] Neglect is disabled, not logging event"
+        return nil
+      elsif user.nil?
+        logger.info "[LessNeglect] No person specified, not logging event"
+        return nil
+      end
  
       person = configuration.convert_to_person(user)
       event = ActionEvent.new({
@@ -36,14 +48,23 @@ module LessNeglect
         }.merge(extras))
  
       client.create_event(person, event)
+      logger.info "[LessNeglect] Logged event #{event_name} for person \"#{person.external_identifier}\""
     end
       
     def update_person(user)
       # Don't send requests when disabled
-      return if configuration.disabled?
-      return if user.nil?
+      if configuration.disabled?
+        logger.info "[LessNeglect] Neglect is disabled, not logging event"
+        return nil
+      elsif user.nil?
+        logger.info "[LessNeglect] No person specified, not logging event"
+        return nil
+      end
       
-      client.update_person(configuration.convert_to_person(user))
+      person = configuration.convert_to_person(user)
+      
+      client.update_person(person)
+      logger.info "[LessNeglect] Logged event #{event_name} for person \"#{person.external_identifier}\""
     end
     
     # message - a Hash with the following required keys
