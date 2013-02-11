@@ -11,10 +11,13 @@ module LessNeglect
     attr_accessor :disabled
     attr_accessor :person_builder
     
+    # Logger settings
+    attr_accessor :logger
+    
     # The URL of the API server
-    attr_accessor :scheme
-    attr_accessor :host
-    attr_accessor :base_path
+    attr_reader :scheme
+    attr_reader :host
+    attr_reader :base_path
     
     def initialize
       @scheme = 'https'
