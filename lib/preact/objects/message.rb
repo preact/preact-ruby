@@ -1,4 +1,4 @@
-class LessNeglect::Message < LessNeglect::Event
+class Preact::Message < Preact::Event
   
   attr_accessor :subject, :body
 

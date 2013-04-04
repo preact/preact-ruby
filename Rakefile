@@ -14,12 +14,12 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "lessneglect"
+  gem.name = "preact"
   gem.homepage = "http://github.com/lessneglect/lessneglect-ruby"
   gem.license = "MIT"
   gem.summary = "LessNeglect client API"
-  gem.description = "API library to allow you to connect and submit messages and actions to your LessNeglect project account"
-  gem.email = "gooley@lessneglect.com"
+  gem.description = "API library to allow you to connect and submit customer actions to your Preact account"
+  gem.email = "gooley@preact.io"
   gem.authors = ["Christopher Gooley"]
   # dependencies defined in Gemfile
 end
@@ -38,13 +38,13 @@ end
 
 task :default => :spec
 
-require 'rake/rdoctask'
-require File.expand_path("../lib/lessneglect/version", __FILE__)
+require 'rdoc/task'
+require File.expand_path("../lib/preact/version", __FILE__)
 Rake::RDocTask.new do |rdoc|
-  version = LessNeglect::VERSION
+  version = Preact::VERSION
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "lessneglect #{version}"
+  rdoc.title = "preact #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

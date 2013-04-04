@@ -1,4 +1,4 @@
-class LessNeglect::Event < LessNeglect::ApiObject
+class Preact::Event < Preact::ApiObject
   
   attr_accessor :name, :magnitude
 
@@ -6,7 +6,7 @@ class LessNeglect::Event < LessNeglect::ApiObject
     {
       :name      => self.name,
       :magnitude => self.magnitude,
-      :source    => LessNeglect.configuration.user_agent # version of this logging library
+      :source    => Preact.configuration.user_agent # version of this logging library
     }
   end
 

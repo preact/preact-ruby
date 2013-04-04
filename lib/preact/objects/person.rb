@@ -1,4 +1,4 @@
-class LessNeglect::Person < LessNeglect::ApiObject
+class Preact::Person < Preact::ApiObject
     
   attr_accessor :name, :email, :external_identifier, :properties
     

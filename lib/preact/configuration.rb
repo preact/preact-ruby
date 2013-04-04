@@ -1,9 +1,9 @@
-require 'lessneglect/version'
+require 'preact/version'
 
-module LessNeglect
+module Preact
   class Configuration
     
-    # LessNeglect credentials
+    # Preact credentials
     attr_accessor :code
     attr_accessor :secret
     
@@ -18,13 +18,13 @@ module LessNeglect
     
     def initialize
       @scheme = 'https'
-      @host = 'api.lessneglect.com'
+      @host = 'api.preact.io'
       @base_path = '/api/v2'
       
       @disabled = false
       @person_builder = nil
       
-      @user_agent = "ruby-lessneglect:#{LessNeglect::VERSION}"
+      @user_agent = "ruby-preact:#{Preact::VERSION}"
     end
     
     def valid?

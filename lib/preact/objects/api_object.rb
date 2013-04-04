@@ -1,4 +1,4 @@
-class LessNeglect::ApiObject
+class Preact::ApiObject
   
   def initialize(args={})
     args.each do |k,v|

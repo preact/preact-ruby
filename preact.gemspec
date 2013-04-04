@@ -1,14 +1,14 @@
-require File.expand_path("../lib/lessneglect/version", __FILE__)
+require File.expand_path("../lib/preact/version", __FILE__)
 
 Gem::Specification.new do |s|
-  s.name = "lessneglect"
-  s.version = LessNeglect::VERSION
+  s.name = "preact"
+  s.version = Preact::VERSION
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Christopher Gooley", "Zach Millman"]
-  s.date = "2013-01-01"
-  s.description = "API library to allow you to connect and submit messages and actions to your LessNeglect project account"
-  s.email = "gooley@lessneglect.com"
+  s.date = "2013-04-03"
+  s.description = "API library to allow you to connect and submit messages and actions to your Preact project account"
+  s.email = "gooley@preact.io"
   s.extra_rdoc_files = [
     "LICENSE.txt"
   ]
@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.24"
-  s.summary = "LessNeglect client API"
+  s.summary = "Preact Logging API client library"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3

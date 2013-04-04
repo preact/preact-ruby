@@ -1,17 +1,17 @@
-require 'lessneglect/configuration'
-require 'lessneglect/client'
+require 'preact/configuration'
+require 'preact/client'
 
-require 'lessneglect/objects/api_object'
-require 'lessneglect/objects/person'
-require 'lessneglect/objects/event'
-require 'lessneglect/objects/action_event'
-require 'lessneglect/objects/message'
+require 'preact/objects/api_object'
+require 'preact/objects/person'
+require 'preact/objects/event'
+require 'preact/objects/action_event'
+require 'preact/objects/message'
 
-module LessNeglect
+module Preact
 
   class << self
-    # A LessNeglect configuration object. Must like a hash and return sensible values for all
-    # LessNeglect configuration options. See LessNeglect::Configuration
+    # A Preact configuration object. Must like a hash and return sensible values for all
+    # Preact configuration options. See Preact::Configuration
     attr_accessor :configuration
     
     attr_accessor :default_client
@@ -22,7 +22,7 @@ module LessNeglect
 
       yield(configuration) if block_given?
       
-      raise StandardError.new "Must specify project code and secret when configuring the LessNeglect api client" unless configuration.valid?
+      raise StandardError.new "Must specify project code and secret when configuring the Preact api client" unless configuration.valid?
     end
     
     def log_event(user, event_name, extras = {})

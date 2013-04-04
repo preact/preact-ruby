@@ -1,4 +1,4 @@
-module LessNeglect
+module Preact
 	class ActionEvent < Event
 
     attr_accessor :note, :links, :external_identifier, :extras
