@@ -5,8 +5,8 @@ class Preact::Client
     
     def create_event(person, action_event)
     	params = {
-        :person => person.as_json,
-        :event => action_event.as_json
+        :person => person,
+        :event => action_event
       }
 
       data = post_request("/events", params)
@@ -14,7 +14,7 @@ class Preact::Client
 
     def update_person(person)
       params = {
-        :person => person.as_json
+        :person => person
       }
 
       data = post_request("/people", params)

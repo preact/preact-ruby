@@ -30,12 +30,13 @@ module Preact
       return if configuration.disabled?
       return if user.nil?
  
-      person = configuration.convert_to_person(user)
+      person = configuration.convert_to_person(user).as_json
       event = ActionEvent.new({
-          :name => event_name
-        }.merge(extras))
- 
-      client.create_event(person, event)
+          :name => event_name,
+          :timestamp => Time.now.to_f
+        }.merge(extras)).as_json
+
+      send_log(person, event)
     end
       
     def update_person(user)
@@ -43,7 +44,9 @@ module Preact
       return if configuration.disabled?
       return if user.nil?
       
-      client.update_person(configuration.convert_to_person(user))
+      person = configuration.convert_to_person(user).as_json
+
+      send_log(person)
     end
     
     # message - a Hash with the following required keys
@@ -55,13 +58,24 @@ module Preact
       return if configuration.disabled?
       return if user.nil?
       
-      person = configuration.convert_to_person(user)
-      message_obj = Message.new(message)
-      
-      client.create_event(person, message_obj)
+      person = configuration.convert_to_person(user).as_json
+      message_obj = Message.new(message).as_json
+
+      send_log(person, message_obj)
     end
     
     protected
+
+    def send_log(person, event=nil)
+      psn = person.as_json
+      evt = event.nil? ? nil : event.as_json
+
+      if defined?(Preact::Sidekiq)
+        Preact::Sidekiq::PreactLoggingWorker.perform_async(psn, evt)
+      else
+        client.create_event(psn, evt)
+      end
+    end
     
     def client
       self.default_client ||= Client.new

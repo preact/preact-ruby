@@ -66,17 +66,12 @@ module Preact
     private
     
     def default_user_to_person_hash(user)
-      # TODO - you should update this to build a full LN Person object
-      # with the data in your User model
-    
       {
         :name => user.name,
         :email => user.email,
-        :external_identifer => user.id,
+        :uid => user.id,
         :properties => {
-          :account_level => (user.account_level if user.respond_to?(:account_level)),
-          :is_paying => (user.paying? if user.respond_to?(:paying)),
-          :created_at => user.created_at.to_i
+          :created_at => (user.created_at.to_i if user.respond_to?(:created_at))
         }
       }
     end
