@@ -14,7 +14,7 @@ gem 'preact'
 Configuration
 ---
 
-Configure Preact with your API credentials. (This should go in an initializer file named `/config/initializers/preact.rb` in Rails applications)
+Configure Preact with your API credentials. You can find your Preact credentials on the [API settings page](https://secure.preact.io/settings/api) (This should go in an initializer file named `/config/initializers/preact.rb` in Rails applications)
 
 ```ruby
 Preact.configure do |config|
@@ -83,8 +83,29 @@ end
 ```
 
 ```ruby
-Preact.log_event(User.find(1), 'restored_answer_data')
+Preact.log_event(User.find(1), 'restored_answer_data') 
 Preact.log_event(User.find(1), 'updated-profile', :extras => {:twitter => "@gooley"})
 ```
+
+Sidekiq Integration
+---
+Using [Sidekiq](http://sidekiq.org) for background processing? That's the best way to log data to Preact so it's not done in-process. 
+
+All you need to do is add `require 'preact/sidekiq'` at the top of your `preact.rb` initializer and we'll take it from there. Jobs will be placed on the :default queue.
+
+Devise / Warden Integration
+--
+Automatically log your login/logout events by including this in your `preact.rb` initializer. Just put it under the Preact config block.
+
+```ruby
+# after-auth hook to log the login
+Warden::Manager.after_authentication do |user,auth,opts|
+  Preact.log_event(user, "logged-in")
+end
+Warden::Manager.before_logout do |user,auth,opts|
+  Preact.log_event(user, "logged-out")
+end
+```
+
 
 Copyright (c) 2011-2013 Christopher Gooley, Preact. See LICENSE.txt for further details.
