@@ -23,6 +23,11 @@ module Preact
       yield(configuration) if block_given?
       
       raise StandardError.new "Must specify project code and secret when configuring the Preact api client" unless configuration.valid?
+
+      if defined? Rails
+        # never log things if we're in Rails test environment
+        configuration.disabled = true if Rails.env.test?
+      end
     end
     
     def log_event(user, event_name, extras = {})

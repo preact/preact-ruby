@@ -22,7 +22,7 @@ Preact.configure do |config|
   config.secret = '1234asdfasdf1234'  # required
   
   # Disable in Rails development environments
-  # config.disabled = (Rails.env != "development")
+  # config.disabled = Rails.env.development?
   
   # Uncomment this this line to customize the data sent with your Person objects.
   # Your procedure should return a Hash of attributes
@@ -109,3 +109,5 @@ end
 
 
 Copyright (c) 2011-2013 Christopher Gooley, Preact. See LICENSE.txt for further details.
+
+Thanks to [Zach Millman](https://github.com/zmillman) for many contributions.

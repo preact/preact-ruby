@@ -36,7 +36,7 @@ module Preact
     end
     
     def disabled?
-      !!disabled
+      disabled == true
     end
     
     def user_agent
