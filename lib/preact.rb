@@ -36,27 +36,6 @@ module Preact
         configuration.disabled = true if Rails.env.test?
       end
     end
-    
-    def log_account_event(user, event_name, account, extras = {})
-      # Don't send requests when disabled
-      if configuration.disabled?
-        logger.info "[Preact] Logging is disabled, not logging event"
-        return nil
-      elsif account.nil?
-        logger.error "[Preact] No account specified, not logging event"
-        return nil
-      end
-
-      account_info = configuration.convert_to_account(account)
-      extras ||= {}
-      extras[:extras] ||= {}
-      extras[:extras] = {
-        :_account_id => account_info.id,
-        :_account_name => account_info.name
-      }
-
-      log_event(user, event_name, extras.merge(account_extras))
-    end
 
     def log_event(user, event, account = nil)
       # Don't send requests when disabled
@@ -85,14 +64,8 @@ module Preact
       end
 
       if account
-        # attach the account info to the event extras
-        account_info = configuration.convert_to_account(account)
-        preact_event.extras ||= {}
-        preact_event.extras.merge!({
-          :_account_id => account_info.id,
-          :_account_name => account_info.name
-        })
-        puts preact_event.inspect
+        # attach the account info to the event
+        preact_event.account = configuration.convert_to_account(account).as_json
       end
       
       send_log(person, preact_event)
