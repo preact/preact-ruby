@@ -10,11 +10,15 @@ module Preact
     # Default option settings
     attr_accessor :disabled
     attr_accessor :person_builder
+    attr_accessor :account_builder
+    
+    # Logger settings
+    attr_accessor :logger
     
     # The URL of the API server
-    attr_accessor :scheme
-    attr_accessor :host
-    attr_accessor :base_path
+    attr_reader :scheme
+    attr_reader :host
+    attr_reader :base_path
     
     def initialize
       @scheme = 'https'
@@ -54,18 +58,34 @@ module Preact
         else
           raise "person_builder must be callable"
         end
-      elsif user.respond_to?(:to_person)
-        Person.new(user.to_person)
+      elsif user.respond_to?(:to_preact)
+        Person.new(user.to_preact)
       elsif user.is_a? Hash
         Person.new(user)
       else
-        Person.new(default_user_to_person_hash(user))
+        Person.new(default_user_to_preact_hash(user))
+      end
+    end
+
+    def convert_to_account(account)
+      if account_builder
+        if account_builder.respond_to?(:call)
+          Account.new(account_builder.call(account))
+        else
+          raise "account_builder must be callable"
+        end
+      elsif account.respond_to?(:to_preact)
+        Account.new(account.to_preact)
+      elsif account.is_a? Hash
+        Account.new(account)
+      else
+        Account.new(default_account_to_preact_hash(account))
       end
     end
     
     private
     
-    def default_user_to_person_hash(user)
+    def default_user_to_preact_hash(user)
       {
         :name => user.name,
         :email => user.email,
@@ -73,6 +93,13 @@ module Preact
         :properties => {
           :created_at => (user.created_at.to_i if user.respond_to?(:created_at))
         }
+      }
+    end
+
+    def default_account_to_preact_hash(account)
+      {
+        :id => account.id,
+        :name => (account.name if account.respond_to?(:name))
       }
     end
 

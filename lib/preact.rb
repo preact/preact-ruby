@@ -7,6 +7,8 @@ require 'preact/objects/event'
 require 'preact/objects/action_event'
 require 'preact/objects/message'
 
+require 'logger'
+
 module Preact
 
   class << self
@@ -16,12 +18,17 @@ module Preact
     
     attr_accessor :default_client
 
+    attr_accessor :logger
+
     # Call this method to modify the configuration in your initializers
     def configure
       self.configuration ||= Configuration.new
 
       yield(configuration) if block_given?
       
+      # Configure logger.  Default to use Rails
+      self.logger = Logger.new(STDOUT) # ||= configuration.logger || (defined?(Rails) ? Rails.logger : Logger.new(STDOUT))
+
       raise StandardError.new "Must specify project code and secret when configuring the Preact api client" unless configuration.valid?
 
       if defined? Rails
@@ -30,24 +37,76 @@ module Preact
       end
     end
     
-    def log_event(user, event_name, extras = {})
+    def log_account_event(user, event_name, account, extras = {})
       # Don't send requests when disabled
-      return if configuration.disabled?
-      return if user.nil?
+      if configuration.disabled?
+        logger.info "[Preact] Logging is disabled, not logging event"
+        return nil
+      elsif account.nil?
+        logger.error "[Preact] No account specified, not logging event"
+        return nil
+      end
+
+      account_info = configuration.convert_to_account(account)
+      extras ||= {}
+      extras[:extras] ||= {}
+      extras[:extras] = {
+        :_account_id => account_info.id,
+        :_account_name => account_info.name
+      }
+
+      log_event(user, event_name, extras.merge(account_extras))
+    end
+
+    def log_event(user, event, account = nil)
+      # Don't send requests when disabled
+      if configuration.disabled?
+        logger.info "[Preact] Logging is disabled, not logging event"
+        return nil
+      elsif user.nil?
+        logger.error "[Preact] No person specified, not logging event"
+        return nil
+      elsif event.nil?
+        logger.error "[Preact] No event specified, not logging event"
+        return nil
+      end
  
       person = configuration.convert_to_person(user).as_json
-      event = ActionEvent.new({
-          :name => event_name,
-          :timestamp => Time.now.to_f
-        }.merge(extras)).as_json
 
-      send_log(person, event)
+      if event.is_a?(String)
+        preact_event = ActionEvent.new({
+            :name => event,
+            :timestamp => Time.now.to_f
+          }).as_json
+      elsif event.is_a?(Hash)
+        preact_event = ActionEvent.new(event)
+      elsif !event.is_a?(ActionEvent)
+        raise StandardError.new "Unknown event class, must pass a string event name, event hash or ActionEvent object"
+      end
+
+      if account
+        # attach the account info to the event extras
+        account_info = configuration.convert_to_account(account)
+        preact_event.extras ||= {}
+        preact_event.extras.merge!({
+          :_account_id => account_info.id,
+          :_account_name => account_info.name
+        })
+        puts preact_event.inspect
+      end
+      
+      send_log(person, preact_event)
     end
       
     def update_person(user)
       # Don't send requests when disabled
-      return if configuration.disabled?
-      return if user.nil?
+      if configuration.disabled?
+        logger.info "[Preact] Logging is disabled, not logging event"
+        return nil
+      elsif user.nil?
+        logger.info "[Preact] No person specified, not logging event"
+        return nil
+      end
       
       person = configuration.convert_to_person(user).as_json
 
@@ -58,10 +117,16 @@ module Preact
     #           :subject - subject of the message
     #           :body - body of the message
     #           * any additional keys are used as extra options for the message (:note, etc.)
+    # DEPRECATED - DO NOT USE
     def message(user, message = {})
       # Don't send requests when disabled
-      return if configuration.disabled?
-      return if user.nil?
+      if configuration.disabled?
+        logger.info "[Preact] Logging is disabled, not logging event"
+        return nil
+      elsif user.nil?
+        logger.info "[Preact] No person specified, not logging event"
+        return nil
+      end
       
       person = configuration.convert_to_person(user).as_json
       message_obj = Message.new(message).as_json

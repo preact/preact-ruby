@@ -25,13 +25,24 @@ Preact.configure do |config|
   # config.disabled = Rails.env.development?
   
   # Uncomment this this line to customize the data sent with your Person objects.
-  # Your procedure should return a Hash of attributes
+  # Your custom procedure should return a Hash of attributes
   # config.person_builder = lambda {|user| {:keys => :values}}
+  
+  # Defaults to Rails.logger or Logger.new(STDOUT). Set to Logger.new('/dev/null') to disable logging.
+  # config.logger = Logger.new('/dev/null')  
 end
 ```
 
 Usage
 ---
+
+The Preact.log_event method takes two required parameters and an optional third parameter.
+
+You must pass both a `person` and an `event`.
+
+The `person` parameter may be either a Hash or an ActiveRecord model (see below). 
+
+The `event` parameter may be either a String if you just are passing the event name, or it may be a Hash of the event object including other properties like `revenue`, `note` and a nested `extras` hash.
 
 ```ruby
 person = {
@@ -49,10 +60,11 @@ person = {
 #common event examples:
 Preact.log_event(person, 'logged-in')
 Preact.log_event(person, 'upgraded')
-Preact.log_event(person, 'processed:payment', :revenue => 900) # revenue specified in cents
-Preact.log_event(person, "uploaded:file", :note => "awesome_resume.pdf")
+Preact.log_event(person, { :name => 'processed:payment', :revenue => 900 }) # revenue specified in cents
+Preact.log_event(person, { :name => 'uploaded:file', :note => "awesome_resume.pdf" })
 
-Preact.log_event(person, 'purchased:item', {
+Preact.log_event(person, {
+    :name => 'purchased:item',
     :note => "black shoes", 
     :revenue => 2500, 
     :extras => {
@@ -61,13 +73,23 @@ Preact.log_event(person, 'purchased:item', {
     })
 ```
 
+If you are a Preact B2B user, you should also log the `account` that this event occurred within. You can do that by passing a third parameter to Preact.log_event to specify the account information. The preferred method for `account` is to use the ActiveRecord integration outlined below.
+
+```ruby
+Preact.log_event(
+          { :email => "bob@honda.com", :name => "Bob Smith" }, # person
+          { :name => 'uploaded:file', :note => "awesome_resume.pdf" }, # event
+          { :id => 1234, :name => "Honda"} # account
+        )
+```
+
 ActiveRecord Integration
 ---
-In your `User` model, you can define a `to_person` method returning a Hash. Preact will detect and use this method on users passed to its logging events.
+In your `User` model, you can define a `to_preact` method returning a Hash. Preact will detect and use this method on users passed to its logging events.
 
 ```ruby
 class User < ActiveRecord::Base
-  def to_person
+  def to_preact
     {
       :name => self.name,
       :email => self.email,
@@ -83,8 +105,28 @@ end
 ```
 
 ```ruby
-Preact.log_event(User.find(1), 'restored_answer_data') 
-Preact.log_event(User.find(1), 'updated-profile', :extras => {:twitter => "@gooley"})
+Preact.log_event(@current_user, 'restored_answer_data') 
+Preact.log_event(@current_user, { :name => 'updated-profile', :extras => {:twitter => "@gooley"} })
+```
+
+Likewise, if you are a Preact B2B user, you can define the `to_preact` method on the model that defines your Account grouping. For instance, if you attach your Users into "Projects" you would add the `to_preact` method into your Project model.
+
+```ruby
+class Project < ActiveRecord::Base
+  def to_preact
+    {
+      :name => self.name,
+      :id => self.id
+    }
+  end
+end
+```
+
+Then, you just pass that model to the log_event method and we will associate the user's action with that account.
+
+```ruby
+Preact.log_event(@current_user, 'restored_answer_data', @current_user.project) 
+Preact.log_event(@current_user, { :name => 'updated-profile', :extras => {:twitter => "@gooley"} }, @current_user.project)
 ```
 
 Sidekiq Integration
