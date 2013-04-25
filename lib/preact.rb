@@ -27,7 +27,7 @@ module Preact
       yield(configuration) if block_given?
       
       # Configure logger.  Default to use Rails
-      self.logger = Logger.new(STDOUT) # ||= configuration.logger || (defined?(Rails) ? Rails.logger : Logger.new(STDOUT))
+      self.logger ||= configuration.logger || (defined?(Rails) ? Rails.logger : Logger.new(STDOUT))
 
       raise StandardError.new "Must specify project code and secret when configuring the Preact api client" unless configuration.valid?
 
