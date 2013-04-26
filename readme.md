@@ -50,7 +50,8 @@ person = {
   :email => "gooley@foliohd.com",
   :uid => "gooley",
   :properties => {
-    :account_level => "Pro",
+    :subscription_level => 4,
+    :subscription_level_name => "Pro",
     :is_paying => true,
     :created_at => 1347060566
     :twitter => "gooley"
@@ -68,6 +69,7 @@ Preact.log_event(person, {
     :note => "black shoes", 
     :revenue => 2500, 
     :extras => {
+      :category => "shoes",
       :size => "13",
       :color => "blue"
     })
@@ -125,8 +127,8 @@ end
 Then, you just pass that model to the log_event method and we will associate the user's action with that account.
 
 ```ruby
-Preact.log_event(@current_user, 'restored_answer_data', @current_user.project) 
-Preact.log_event(@current_user, { :name => 'updated-profile', :extras => {:twitter => "@gooley"} }, @current_user.project)
+Preact.log_event(@current_user, 'restored_answer_data', @current_project) 
+Preact.log_event(@current_user, { :name => 'updated-profile', :extras => {:twitter => "@gooley"} }, @current_project)
 ```
 
 Sidekiq Integration
@@ -150,6 +152,6 @@ end
 ```
 
 
-Copyright (c) 2011-2013 Christopher Gooley, Preact. See LICENSE.txt for further details.
+Copyright (c) 2011-2013 Christopher Gooley, Preact / Less Neglect, Inc. See LICENSE.txt for further details.
 
 Thanks to [Zach Millman](https://github.com/zmillman) for many contributions.
