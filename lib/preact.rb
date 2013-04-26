@@ -49,14 +49,12 @@ module Preact
         logger.error "[Preact] No event specified, not logging event"
         return nil
       end
- 
-      person = configuration.convert_to_person(user).as_json
 
       if event.is_a?(String)
         preact_event = ActionEvent.new({
             :name => event,
             :timestamp => Time.now.to_f
-          }).as_json
+          })
       elsif event.is_a?(Hash)
         preact_event = ActionEvent.new(event)
       elsif !event.is_a?(ActionEvent)
@@ -67,8 +65,10 @@ module Preact
         # attach the account info to the event
         preact_event.account = configuration.convert_to_account(account).as_json
       end
+
+      person = configuration.convert_to_person(user)
       
-      send_log(person, preact_event)
+      send_log(person.as_json, preact_event.as_json)
     end
       
     def update_person(user)
