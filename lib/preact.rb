@@ -6,6 +6,7 @@ require 'preact/objects/person'
 require 'preact/objects/event'
 require 'preact/objects/action_event'
 require 'preact/objects/message'
+require 'preact/objects/account'
 
 require 'logger'
 
