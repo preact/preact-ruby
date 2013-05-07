@@ -97,7 +97,6 @@ class User < ActiveRecord::Base
       :email => self.email,
       :uid => self.id,
       :properties => {
-        :account_level => self.account_level,
         :is_paying => self.paying_customer?,
         :created_at => self.created_at.to_i
       }

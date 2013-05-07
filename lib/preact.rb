@@ -58,7 +58,9 @@ module Preact
           })
       elsif event.is_a?(Hash)
         preact_event = ActionEvent.new(event)
-      elsif !event.is_a?(ActionEvent)
+      elsif event.is_a?(ActionEvent)
+        preact_event = event
+      else
         raise StandardError.new "Unknown event class, must pass a string event name, event hash or ActionEvent object"
       end
 
