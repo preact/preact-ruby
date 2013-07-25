@@ -5,6 +5,8 @@ require 'preact/objects/api_object'
 require 'preact/objects/person'
 require 'preact/objects/event'
 require 'preact/objects/action_event'
+require 'preact/objects/action_link'
+require 'preact/objects/account_event'
 require 'preact/objects/message'
 require 'preact/objects/account'
 
@@ -72,6 +74,38 @@ module Preact
       person = configuration.convert_to_person(user)
       
       send_log(person.as_json, preact_event.as_json)
+    end
+
+    def log_account_event(event, account)
+      # Don't send requests when disabled
+      if configuration.disabled?
+        logger.info "[Preact] Logging is disabled, not logging event"
+        return nil
+      elsif account.nil?
+        logger.error "[Preact] No account specified, not logging event"
+        return nil
+      elsif event.nil?
+        logger.error "[Preact] No event specified, not logging event"
+        return nil
+      end
+
+      if event.is_a?(String)
+        preact_event = AccountEvent.new({
+            :name => event,
+            :timestamp => Time.now.to_f
+          })
+      elsif event.is_a?(Hash)
+        preact_event = AccountEvent.new(event)
+      elsif event.is_a?(AccountEvent)
+        preact_event = event
+      else
+        raise StandardError.new "Unknown event class, must pass a string event name, event hash or AccountEvent object"
+      end
+
+      # attach the account info to the event
+      preact_event.account = configuration.convert_to_account(account).as_json
+      
+      send_log(nil, preact_event.as_json)
     end
       
     def update_person(user)
