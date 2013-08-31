@@ -5,9 +5,9 @@ Gem::Specification.new do |s|
   s.version = Preact::VERSION
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Christopher Gooley", "Zach Millman"]
-  s.date = "2013-04-03"
-  s.description = "API library to allow you to connect and submit messages and actions to your Preact project account"
+  s.authors = ["Christopher Gooley"]
+  s.date = "2013-08-31"
+  s.description = "API library to allow you to connect and submit messages and actions to Preact"
   s.email = "gooley@preact.io"
   s.extra_rdoc_files = [
     "LICENSE.txt"
@@ -43,5 +43,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rcov>, [">= 0"])
   end
   s.add_dependency 'multi_json', '~> 1.0'
+  s.add_dependency 'sucker_punch', '~> 1.0'
 end
 

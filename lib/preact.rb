@@ -1,5 +1,6 @@
 require 'preact/configuration'
 require 'preact/client'
+require 'preact/background_logger'
 
 require 'preact/objects/api_object'
 require 'preact/objects/person'
@@ -42,7 +43,7 @@ module Preact
 
     def log_event(user, event, account = nil)
       # Don't send requests when disabled
-      if configuration.disabled?
+      if configuration.nil? || configuration.disabled?
         logger.info "[Preact] Logging is disabled, not logging event"
         return nil
       elsif user.nil?
@@ -78,7 +79,7 @@ module Preact
 
     def log_account_event(event, account)
       # Don't send requests when disabled
-      if configuration.disabled?
+      if configuration.nil? || configuration.disabled?
         logger.info "[Preact] Logging is disabled, not logging event"
         return nil
       elsif account.nil?
@@ -110,7 +111,7 @@ module Preact
       
     def update_person(user)
       # Don't send requests when disabled
-      if configuration.disabled?
+      if configuration.nil? || configuration.disabled?
         logger.info "[Preact] Logging is disabled, not logging event"
         return nil
       elsif user.nil?
@@ -144,21 +145,24 @@ module Preact
       send_log(person, message_obj)
     end
     
-    protected
-
-    def send_log(person, event=nil)
-      psn = person.as_json
-      evt = event.nil? ? nil : event.as_json
-
-      if defined?(Preact::Sidekiq)
-        Preact::Sidekiq::PreactLoggingWorker.perform_async(psn, evt)
-      else
-        client.create_event(psn, evt)
-      end
-    end
-    
     def client
       self.default_client ||= Client.new
     end
+    
+    protected
+
+      def send_log(person, event=nil)
+        psn = person.as_json
+        evt = event.nil? ? nil : event.as_json
+
+        if defined?(Preact::Sidekiq)
+          Preact::Sidekiq::PreactLoggingWorker.perform_async(psn, evt)
+        else
+          #client.create_event(psn, evt)
+          # use the background thread logger
+          Preact::BackgroundLogger.new.async.perform(psn, evt)
+        end
+      end
+
   end
 end
