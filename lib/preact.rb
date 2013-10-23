@@ -31,14 +31,21 @@ module Preact
       yield(configuration) if block_given?
       
       # Configure logger.  Default to use Rails
-      self.logger ||= configuration.logger || (defined?(Rails) ? Rails.logger : Logger.new(STDOUT))
+      self.logger ||= configuration.logger || (defined?(::Rails) ? ::Rails.logger : Logger.new(STDOUT))
 
       raise StandardError.new "Must specify project code and secret when configuring the Preact api client" unless configuration.valid?
 
-      if defined? Rails
+      if defined? ::Rails
+        # load the rails extensions
+        require 'preact/rails'
+
         # never log things if we're in Rails test environment
-        configuration.disabled = true if Rails.env.test?
+        configuration.disabled = true if ::Rails.env.test?
+      elsif defined? ::Warden
+        # not using rails, so try to use warden
+        require 'preact/warden'
       end
+      
     end
 
     def log_event(user, event, account = nil)

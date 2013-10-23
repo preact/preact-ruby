@@ -11,6 +11,8 @@ module Preact
     attr_accessor :disabled
     attr_accessor :person_builder
     attr_accessor :account_builder
+    attr_accessor :autolog
+    attr_accessor :autolog_ignored_actions
     
     # Logger settings
     attr_accessor :logger
@@ -24,7 +26,9 @@ module Preact
       @scheme = 'https'
       @host = 'api.preact.io'
       @base_path = '/api/v2'
-      
+
+      @autolog = false
+      @autolog_ignored_actions = []
       @disabled = false
       @person_builder = nil
       
@@ -49,6 +53,25 @@ module Preact
     
     def base_uri
       "#{scheme}://#{code}:#{secret}@#{host}#{base_path}"
+    end
+
+    def autolog_enabled?
+      autolog == true
+    end
+
+    def autolog_should_log?(controller, action)
+      # check to see if we're ignoring this action
+      if autolog_ignored_actions && autolog_ignored_actions.is_a?(Array)
+
+        # check to see if we've ignored this specific action
+        return false if autolog_ignored_actions.include?("#{controller}##{action}")
+
+        # check to see if we've ignored all actions from this controller
+        return false if autolog_ignored_actions.include?("#{controller}#*")
+
+      end
+
+      true
     end
     
     def convert_to_person(user)
