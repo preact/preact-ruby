@@ -41,8 +41,10 @@ module Preact
 
         # never log things if we're in Rails test environment
         configuration.disabled = true if ::Rails.env.test?
-      elsif defined? ::Warden
-        # not using rails, so try to use warden
+      end
+
+      if defined? ::Warden
+        # if we're using Warden (Devise), load those extensions
         require 'preact/warden'
       end
       
