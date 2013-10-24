@@ -8,28 +8,87 @@ Installation
 In your Gemfile:
 
 ```ruby
-gem 'preact'
+gem 'preact', "~> 0.8.0"
 ```
+
+Then do a `bundle install` to get the gem.
 
 Configuration
 ---
 
-Configure Preact with your API credentials. You can find your Preact credentials on the [API settings page](https://secure.preact.io/settings/api) (This should go in an initializer file named `/config/initializers/preact.rb` in Rails applications)
+In version 0.8.1 we added a rails generator to make it really easy to add the initializer and get you up and running.
+
+First, obtain your Preact Project Code and API Secret from the [API settings page](https://secure.preact.io/settings/api). Then, in your application directory, run the generator:
+
+```bash
+rails g preact your-code-1234 api-secret-xyzw
+```
+
+That will generate a preact.rb initializer that looks something like this:
 
 ```ruby
 Preact.configure do |config|
-  config.code   = 'abcdefg'           # required
-  config.secret = '1234asdfasdf1234'  # required
+  config.code   = 'your-code-1234'           # required
+  config.secret = 'api-secret-xyzw'  # required
   
+  config.autolog = true
+  config.autolog_ignored_actions = ["sessions#create"]
+
   # Disable in Rails development environments
   # config.disabled = Rails.env.development?
+end
+```
+
+Now when you launch your app and do something as an authenticated user, you should see the activity in Preact.
+
+Autolog
+---
+
+New in version 0.8.1 is the ability to automatically log all controller-based actions that your authenticated users are performing.
+
+In many cases, you won't need to do anything other than put the gem in your Gemfile, bundle, and run the generator.
+
+This works by creating an method on the ActiveController::Base class and setting it as an after_filter for all controllers. We assume that you're using Devise/Warden, because everyone does, and can directly access that to identify who the current_user is. With Autolog enabled, what you will see is rails routes-style events in Preact for each user.
+
+We turn Autolog on by default when you use the generator to build the preact.rb initializer, but if you're upgrading from an existing preact-ruby install you will need to manually update your config.
+
+You can configure controllers and routes to ignore by adding them in the initializer as well. If you want to ignore a specific action, you can include it like so:
+
+```ruby
+config.autolog_ignored_actions = [
+    "documents#new", # ignores the new action on the documents_controller
+    "people#new", # ignores the new action on the people_controller
+    "secret_pages#*" # ignores ALL actions on the secret_pages_controller
+  ]
+```
+
+Rails Controller Helper
+---
+
+Since version 0.8.1, we include a helper method on the base controller called `preact_log` to make it convenient for you to log events directly.
+
+The helper is aware of the current_user and so only requires you to pass the event information as things occur. So for instance, you may log a simple event from one of yoru controllers like so:
+
+```ruby
+class DocumentsController < ApplicationController
+  def show
+    # YOUR CODE STUFF HERE
+
+    preact_log("did-something-cool")
+  end
   
-  # Uncomment this this line to customize the data sent with your Person objects.
-  # Your custom procedure should return a Hash of attributes
-  # config.person_builder = lambda {|user| {:keys => :values}}
-  
-  # Defaults to Rails.logger or Logger.new(STDOUT). Set to Logger.new('/dev/null') to disable logging.
-  # config.logger = Logger.new('/dev/null')  
+  def search
+    # YOUR CODE STUFF HERE
+    
+    preact_log({
+      name: "searched-documents",
+      note: @search_term,
+      extras: {
+        term: @search_term,
+        result_count: @results.count
+      }
+    })
+  end
 end
 ```
 
@@ -138,19 +197,13 @@ All you need to do is add `require 'preact/sidekiq'` at the top of your `preact.
 
 Devise / Warden Integration
 --
-Automatically log your login/logout events by including this in your `preact.rb` initializer. Just put it under the Preact config block.
-
-```ruby
-# after-auth hook to log the login
-Warden::Manager.after_authentication do |user,auth,opts|
-  Preact.log_event(user, "logged-in")
-end
-Warden::Manager.before_logout do |user,auth,opts|
-  Preact.log_event(user, "logged-out")
-end
-```
+If you are using Warden, Preact will automatically log your login/logout events. 
+If when Preact loads, it notices that a ::Warden class is defined, it will require the preact/warden module which adds the appropriate hooks into Warden.
 
 
+
+License
+--
 Copyright (c) 2011-2013 Christopher Gooley, Preact / Less Neglect, Inc. See LICENSE.txt for further details.
 
 Thanks to [Zach Millman](https://github.com/zmillman) for many contributions.
