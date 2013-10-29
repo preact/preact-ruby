@@ -1,16 +1,18 @@
 module Preact
   module Controllers
     module Helpers
-      extend ActiveSupport::Concern
 
       def preact_autolog_controller_action
+
         # only track logged-in users
         return true unless current_user
+
+        # don't autolog if we logged something already on this controller execution
+        # this allows you to add better preact logging in your controller and not get duplicate logging
+        return true if defined?(@preact_logged_event)
         
         controller = params[:controller]
         action = params[:action]
-        target_id = params[:id]
-        note = nil
 
         return true unless controller && action
 
@@ -18,15 +20,11 @@ module Preact
 
         event_name = "#{controller}##{action}"
 
-        if response.status == 404
-          note = "NOT FOUND"
-        elsif response.status == 500
-          event_name = "!#{event_name}--error"
-        end
+        note = self.guess_target_item_name(controller)
 
         event = {
           :name => event_name,
-          :target_id => target_id,
+          :target_id => params[:id],
           :medium => "autolog-rails-v1.0",
           :note => note,
           :extras => {
@@ -39,6 +37,9 @@ module Preact
         preact_log(event)
 
         true
+      rescue => ex
+        Preact.logger.warn "[Preact] Autolog failed: #{ex.message}"
+        true # always returns strue no matter what...
       end
 
       # helper method on the controller to make logging events easy
@@ -48,6 +49,9 @@ module Preact
         else
           Preact.log_event(current_user, event)
         end
+
+        # make a note that we've logged an event on this controller
+        @preact_logged_event = event
       end
 
       # attach the after_filter to all controllers if we've enabled autologging
@@ -56,6 +60,21 @@ module Preact
           after_filter :preact_autolog_controller_action
         end
       end
+
+
+      protected
+
+        def guess_target_item_name(controller)
+          # get a little too clever and try to see if we've loaded an item
+          guessed_target_variable = controller.split("/").last.singularize rescue nil
+          if guessed_target_variable
+            if guessed_target_item = self.instance_variable_get("@#{guessed_target_variable}")
+              return guessed_target_item.name if guessed_target_item.respond_to?(:name)
+              return guessed_target_item.title if guessed_target_item.respond_to?(:title)
+            end
+          end
+          nil
+        end
 
     end
   end

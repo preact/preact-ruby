@@ -17,7 +17,7 @@ Preact.configure do |config|
 
   # specify controller#action items that you want to ignore and not log to Preact.
   # default is to not log sessions#create beacuse if you're using Devise, we get that already
-  config.autolog_ignored_actions = ["sessions#create"]
+  config.autolog_ignored_actions = ["sessions#create", "devise/sessions#create"]
 
   # disable in Rails non-production environments
   # uncomment this if you don't want to log development activities

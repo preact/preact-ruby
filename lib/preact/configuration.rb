@@ -113,9 +113,7 @@ module Preact
         :name => user.name,
         :email => user.email,
         :uid => user.id,
-        :properties => {
-          :created_at => (user.created_at.to_i if user.respond_to?(:created_at))
-        }
+        :created_at => (user.created_at.to_i if user.respond_to?(:created_at))
       }
     end
 
