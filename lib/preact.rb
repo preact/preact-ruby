@@ -26,7 +26,16 @@ module Preact
 
     # Call this method to modify the configuration in your initializers
     def configure
-      self.configuration ||= Configuration.new
+      defaults = {}
+      # try to use the yml config if we're on rails and it exists
+      if defined? ::Rails
+        config_yml = File.join(::Rails.root.to_s,"config","preact.yml")
+        if File.exists?(config_yml)
+          defaults = YAML::load_file(config_yml)[::Rails.env]
+        end
+      end
+
+      self.configuration ||= Configuration.new(defaults)
 
       yield(configuration) if block_given?
       
@@ -131,6 +140,21 @@ module Preact
       person = configuration.convert_to_person(user).as_json
 
       send_log(person)
+    end
+    
+    def update_account(account)
+      # Don't send requests when disabled
+      if configuration.nil? || configuration.disabled?
+        logger.info "[Preact] Logging is disabled, not updating account"
+        return nil
+      elsif account.nil?
+        logger.info "[Preact] No account specified, not updating account"
+        return nil
+      end
+
+      account = configuration.convert_to_account(account)
+
+      client.update_account(account)
     end
     
     # message - a Hash with the following required keys

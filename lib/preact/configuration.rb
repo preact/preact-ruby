@@ -18,11 +18,11 @@ module Preact
     attr_accessor :logger
     
     # The URL of the API server
-    attr_reader :scheme
-    attr_reader :host
-    attr_reader :base_path
+    attr_accessor :scheme
+    attr_accessor :host
+    attr_accessor :base_path
     
-    def initialize
+    def initialize(defaults={})
       @scheme = 'https'
       @host = 'api.preact.io'
       @base_path = '/api/v2'
@@ -33,6 +33,12 @@ module Preact
       @person_builder = nil
       
       @user_agent = "ruby-preact:#{Preact::VERSION}"
+
+      if defaults && defaults.is_a?(Hash)
+        defaults.each do |k,v|
+          instance_variable_set("@#{k}", v) unless v.nil?
+        end
+      end
     end
     
     def valid?
