@@ -42,8 +42,6 @@ module Preact
       # Configure logger.  Default to use Rails
       self.logger ||= configuration.logger || (defined?(::Rails) ? ::Rails.logger : Logger.new(STDOUT))
 
-      raise StandardError.new "Must specify project code and secret when configuring the Preact api client" unless configuration.valid?
-
       if defined? ::Rails
         # load the rails extensions
         require 'preact/rails'
@@ -56,12 +54,12 @@ module Preact
         # if we're using Warden (Devise), load those extensions
         require 'preact/warden'
       end
-      
+
     end
 
     def log_event(user, event, account = nil)
       # Don't send requests when disabled
-      if configuration.nil? || configuration.disabled?
+      if configuration.nil? || configuration.disabled? || !configuration.valid?
         logger.info "[Preact] Logging is disabled, not logging event"
         return nil
       elsif user.nil?
@@ -97,7 +95,7 @@ module Preact
 
     def log_account_event(event, account)
       # Don't send requests when disabled
-      if configuration.nil? || configuration.disabled?
+      if configuration.nil? || configuration.disabled? || !configuration.valid?
         logger.info "[Preact] Logging is disabled, not logging event"
         return nil
       elsif account.nil?
@@ -129,7 +127,7 @@ module Preact
       
     def update_person(user)
       # Don't send requests when disabled
-      if configuration.nil? || configuration.disabled?
+      if configuration.nil? || configuration.disabled? || !configuration.valid?
         logger.info "[Preact] Logging is disabled, not logging event"
         return nil
       elsif user.nil?
@@ -144,7 +142,7 @@ module Preact
     
     def update_account(account)
       # Don't send requests when disabled
-      if configuration.nil? || configuration.disabled?
+      if configuration.nil? || configuration.disabled? || !configuration.valid?
         logger.info "[Preact] Logging is disabled, not updating account"
         return nil
       elsif account.nil?

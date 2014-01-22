@@ -28,7 +28,7 @@ module Preact
       data = post_request("/accounts", params)
     end
     
-    #private
+    private
 
     def post_request(method, params={})
       params = prepare_request_params(params)
