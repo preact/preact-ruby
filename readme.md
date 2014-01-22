@@ -92,6 +92,27 @@ class DocumentsController < ApplicationController
 end
 ```
 
+#### B2B Event Logging
+
+If you are logging Accounts in a B2B context, you may find it useful to override the preact_log helper at the ApplicationController level.
+
+Typically, you'll have a variable or method which provides the current context that the `@current_user` is acting under. For us, it's called `@current_project`.
+
+Adding this override will make sure that everywhere you call preact_log, it will automatically include the account context when logging events.
+
+```ruby
+class ApplicationController
+
+  def preact_log(event, account=nil)
+    account ||= @current_project
+    super(event, account)
+  end
+
+end
+```
+
+Note: If you make this change in your ApplicationControler, make sure you add it to any other base controllers you have that don't inherit from ApplicationController (e.g. your API base controller, etc)
+
 Usage
 ---
 
@@ -168,6 +189,8 @@ end
 Preact.log_event(@current_user, 'restored_answer_data') 
 Preact.log_event(@current_user, { :name => 'updated-profile', :extras => {:twitter => "@gooley"} })
 ```
+
+#### B2B Account mapping method
 
 Likewise, if you are a Preact B2B user, you can define the `to_preact` method on the model that defines your Account grouping. For instance, if you attach your Users into "Projects" you would add the `to_preact` method into your Project model.
 
