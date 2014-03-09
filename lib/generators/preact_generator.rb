@@ -17,7 +17,7 @@ FILE
   def create_config_file
     create_file "config/preact.yml", <<-FILE
 # Preact Logging Configs
-common: &defaults
+production: &defaults
 
   # your Preact API credentials
   code: "#{project_code}"
