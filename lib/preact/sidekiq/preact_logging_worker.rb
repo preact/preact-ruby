@@ -1,6 +1,8 @@
+require 'sidekiq'
+
 module Preact::Sidekiq
   class PreactLoggingWorker
-    include Sidekiq::Worker
+    include ::Sidekiq::Worker
 
     def perform(person, event=nil)
       client = Preact::Client.new

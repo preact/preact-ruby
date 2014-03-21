@@ -2,15 +2,7 @@ require 'preact/configuration'
 require 'preact/client'
 require 'preact/background_logger'
 
-require 'preact/objects/api_object'
-require 'preact/objects/person'
-require 'preact/objects/event'
-require 'preact/objects/action_event'
-require 'preact/objects/action_link'
-require 'preact/objects/account_event'
-require 'preact/objects/message'
-require 'preact/objects/account'
-
+require 'json'
 require 'logger'
 
 module Preact
@@ -27,6 +19,7 @@ module Preact
     # Call this method to modify the configuration in your initializers
     def configure
       defaults = {}
+
       # try to use the yml config if we're on rails and it exists
       if defined? ::Rails
         config_yml = File.join(::Rails.root.to_s,"config","preact.yml")
@@ -55,6 +48,11 @@ module Preact
         require 'preact/warden'
       end
 
+      if defined? ::Preact::Sidekiq
+        # set up the default queue for the sidekiq job
+        ::Preact::Sidekiq::PreactLoggingWorker.sidekiq_options(:queue => self.configuration.sidekiq_queue)
+      end
+
     end
 
     def log_event(user, event, account = nil)
@@ -71,26 +69,26 @@ module Preact
       end
 
       if event.is_a?(String)
-        preact_event = ActionEvent.new({
+        preact_event = {
             :name => event,
             :timestamp => Time.now.to_f
-          })
+          }
       elsif event.is_a?(Hash)
-        preact_event = ActionEvent.new(event)
-      elsif event.is_a?(ActionEvent)
         preact_event = event
       else
-        raise StandardError.new "Unknown event class, must pass a string event name, event hash or ActionEvent object"
+        raise StandardError.new "Unknown event class, must pass a string event name or event hash."
       end
 
       if account
         # attach the account info to the event
-        preact_event.account = configuration.convert_to_account(account).as_json
+        preact_event[:account] = configuration.convert_to_account(account)
       end
 
       person = configuration.convert_to_person(user)
+
+      preact_event[:klass] = "actionevent"
       
-      send_log(person.as_json, preact_event.as_json)
+      send_log(person, preact_event)
     end
 
     def log_account_event(event, account)
@@ -120,7 +118,7 @@ module Preact
       end
 
       # attach the account info to the event
-      preact_event.account = configuration.convert_to_account(account).as_json
+      preact_event.account = configuration.convert_to_account(account)
       
       send_log(nil, preact_event.as_json)
     end
@@ -135,9 +133,9 @@ module Preact
         return nil
       end
       
-      person = configuration.convert_to_person(user).as_json
+      person = configuration.convert_to_person(user)
 
-      send_log(person)
+      client.update_person(person)
     end
     
     def update_account(account)
@@ -155,27 +153,6 @@ module Preact
       client.update_account(account)
     end
     
-    # message - a Hash with the following required keys
-    #           :subject - subject of the message
-    #           :body - body of the message
-    #           * any additional keys are used as extra options for the message (:note, etc.)
-    # DEPRECATED - DO NOT USE
-    def message(user, message = {})
-      # Don't send requests when disabled
-      if configuration.disabled?
-        logger.info "[Preact] Logging is disabled, not logging event"
-        return nil
-      elsif user.nil?
-        logger.info "[Preact] No person specified, not logging event"
-        return nil
-      end
-      
-      person = configuration.convert_to_person(user).as_json
-      message_obj = Message.new(message).as_json
-
-      send_log(person, message_obj)
-    end
-    
     def client
       self.default_client ||= Client.new
     end
@@ -183,13 +160,12 @@ module Preact
     protected
 
       def send_log(person, event=nil)
-        psn = person.as_json
-        evt = event.nil? ? nil : event.as_json
+        psn = person.to_hash
+        evt = event.nil? ? nil : event.to_hash
 
-        if defined?(Preact::Sidekiq)
+        if defined?(Preact::Sidekiq) && (configuration.logging_mode.nil? || configuration.logging_mode == :sidekiq)
           Preact::Sidekiq::PreactLoggingWorker.perform_async(psn, evt)
         else
-          #client.create_event(psn, evt)
           # use the background thread logger
           Preact::BackgroundLogger.new.async.perform(psn, evt)
         end

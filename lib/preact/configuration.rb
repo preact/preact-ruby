@@ -13,6 +13,9 @@ module Preact
     attr_accessor :account_builder
     attr_accessor :autolog
     attr_accessor :autolog_ignored_actions
+    attr_accessor :sidekiq_queue
+    attr_accessor :request_timeout
+    attr_accessor :logging_mode
     
     # Logger settings
     attr_accessor :logger
@@ -31,6 +34,10 @@ module Preact
       @autolog_ignored_actions = []
       @disabled = false
       @person_builder = nil
+
+      @logging_mode = nil
+      @sidekiq_queue = :default
+      @request_timeout = 5
       
       @user_agent = "ruby-preact:#{Preact::VERSION}"
 
@@ -83,33 +90,76 @@ module Preact
     def convert_to_person(user)
       if person_builder
         if person_builder.respond_to?(:call)
-          Person.new(person_builder.call(user))
+          hash = person_builder.call(user)
         else
           raise "person_builder must be callable"
         end
       elsif user.respond_to?(:to_preact)
-        Person.new(user.to_preact)
+        hash = user.to_preact
       elsif user.is_a? Hash
-        Person.new(user)
+        hash = user
       else
-        Person.new(default_user_to_preact_hash(user))
+        hash = default_user_to_preact_hash(user)
       end
+
+      hash
     end
 
     def convert_to_account(account)
       if account_builder
         if account_builder.respond_to?(:call)
-          Account.new(account_builder.call(account))
+          hash = account_builder.call(account)
         else
           raise "account_builder must be callable"
         end
       elsif account.respond_to?(:to_preact)
-        Account.new(account.to_preact)
+        hash = account.to_preact
       elsif account.is_a? Hash
-        Account.new(account)
+        hash = account
       else
-        Account.new(default_account_to_preact_hash(account))
+        hash = default_account_to_preact_hash(account)
       end
+
+      hash
+    end
+
+    def prepare_person_hash(person)
+      if external_id = person[:external_identifier] || person["external_identifier"]
+        person[:uid] ||= external_id
+        person.delete(:external_identifier)
+        person.delete("external_identifier")
+      end
+
+      if created_at = person[:created_at] || person["created_at"]
+        if created_at.respond_to?(:to_i)
+          created_at = created_at.to_i
+        end
+
+        person[:created_at] = created_at
+        person.delete("created_at")
+      end
+
+      person
+    end
+
+    def prepare_account_hash(account)
+      # id for account should actually be passed as external_identifier
+      # make that correction here before sending (LEGACY SUPPORT)
+      external_id = account[:external_identifier] || account["external_identifier"]
+      if account_id = account[:id] || account["id"]
+        if external_id.nil?
+          account[:external_identifier] = account_id
+          account.delete(:id)
+          account.delete("id")
+        end
+      end
+
+      account
+    end
+
+    def prepare_event_hash(event)
+      event[:source] = Preact.configuration.user_agent
+      event
     end
     
     private
