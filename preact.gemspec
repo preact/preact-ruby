@@ -6,14 +6,13 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Christopher Gooley"]
-  s.date = "2013-08-31"
   s.description = "API library to allow you to connect and submit messages and actions to Preact"
-  s.email = "gooley@preact.io"
+  s.email = "gooley@preact.com"
   s.extra_rdoc_files = [
     "LICENSE.txt"
   ]
   s.files = Dir["{lib}/**/*.rb", "bin/*", "LICENSE", "*.md"]
-  s.homepage = "http://github.com/lessneglect/lessneglect-ruby"
+  s.homepage = "https://github.com/preact/preact-ruby"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.24"
