@@ -8,7 +8,7 @@ Installation
 In your Gemfile:
 
 ```ruby
-gem 'preact', "~> 0.8.0"
+gem 'preact', "~> 1.0"
 ```
 
 Then do a `bundle install` to get the gem.
@@ -223,7 +223,9 @@ Devise / Warden Integration
 If you are using Warden, Preact will automatically log your login/logout events. 
 If when Preact loads, it notices that a ::Warden class is defined, it will require the preact/warden module which adds the appropriate hooks into Warden.
 
-
+Background Sending
+___
+By default, Preact uses [SuckerPunch](https://github.com/brandonhilkert/sucker_punch) to make sure nothing gets blocked.
 
 License
 --
