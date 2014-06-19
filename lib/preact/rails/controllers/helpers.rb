@@ -54,6 +54,14 @@ module Preact
         @preact_logged_event = event
       end
 
+      def inject_javascript
+        if body_end = response.body.index("</body")
+          script = build_script
+
+          response.body = response.body.insert(body_end, script)
+        end
+      end
+
       # attach the after_filter to all controllers if we've enabled autologging
       if Preact.configuration.autolog_enabled?
         ActiveSupport.on_load(:action_controller) do
@@ -61,8 +69,32 @@ module Preact
         end
       end
 
+      ActiveSupport.on_load(:action_controller) do
+        after_filter :inject_javascript
+      end
+
 
       protected
+
+        def build_script
+          script = <<-SCRIPT
+<script>
+  var _lnq = _lnq || [];
+  _lnq.push(['_setCode', '#{Preact.configuration.code.to_s}']);
+
+  _lnq.push(['_setPersonData', #{Preact.configuration.convert_to_person(current_user).to_json}]);
+
+
+  (function() {
+    var ln = document.createElement('script'); 
+    ln.type = 'text/javascript'; ln.async = true;
+    ln.src = 'https://d2bbvl6dq48fa6.cloudfront.net/js/ln-2.4.min.js';
+    var s = document.getElementsByTagName('script')[0]; 
+    s.parentNode.insertBefore(ln, s);
+  })();
+</script>
+SCRIPT
+        end
 
         def guess_target_item_name(controller)
           # get a little too clever and try to see if we've loaded an item

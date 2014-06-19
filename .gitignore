@@ -17,6 +17,10 @@ pkg
 # built gems
 *.gem
 
+# ctags
+.tags
+.tags_sorted_by_file
+
 # Have editor/IDE/OS specific files you need to ignore? Consider using a global gitignore: 
 #
 # * Create a file at ~/.gitignore
