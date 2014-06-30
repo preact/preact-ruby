@@ -63,6 +63,9 @@ module Preact
       elsif user.nil?
         logger.error "[Preact] No person specified, not logging event"
         return nil
+      elsif account.nil?
+        logger.error "[Preact] No account specified, not logging event"
+        return nil
       elsif event.nil?
         logger.error "[Preact] No event specified, not logging event"
         return nil

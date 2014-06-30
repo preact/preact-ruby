@@ -16,6 +16,9 @@ module Preact
     attr_accessor :sidekiq_queue
     attr_accessor :request_timeout
     attr_accessor :logging_mode
+
+    attr_accessor :current_user_getter
+    attr_accessor :current_account_getter
     
     # Logger settings
     attr_accessor :logger
@@ -38,6 +41,9 @@ module Preact
       @logging_mode = nil
       @sidekiq_queue = :default
       @request_timeout = 5
+
+      @current_user_getter = :current_user
+      @current_account_getter = nil
       
       @user_agent = "ruby-preact:#{Preact::VERSION}"
 
@@ -49,6 +55,7 @@ module Preact
     end
     
     def valid?
+      # we require both the API keys
       code && secret
     end
     
@@ -87,7 +94,31 @@ module Preact
       true
     end
     
+    def get_current_user(target)
+      return nil if current_user_getter.nil?
+
+      if current_user_getter.to_s.starts_with?("@")
+        # instance var
+        target.instance_variable_get(current_user_getter) rescue nil
+      else
+        target.send(current_user_getter) rescue nil
+      end
+    end
+
+    def get_current_account(target)
+      return nil if current_user_getter.nil?
+
+      if current_account_getter.to_s.starts_with?("@")
+        # instance var
+        target.instance_variable_get(current_account_getter) rescue nil
+      else
+        target.send(current_account_getter) rescue nil
+      end
+    end
+
     def convert_to_person(user)
+      return nil if user.nil?
+
       if person_builder
         if person_builder.respond_to?(:call)
           hash = person_builder.call(user)
@@ -106,6 +137,8 @@ module Preact
     end
 
     def convert_to_account(account)
+      return nil if account.nil?
+      
       if account_builder
         if account_builder.respond_to?(:call)
           hash = account_builder.call(account)

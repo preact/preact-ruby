@@ -33,6 +33,11 @@ production: &defaults
     - "sessions#create"
     - "devise/sessions#create"
 
+  # specify how to retrieve the current user and account from within the application controller
+  # you may use either an instance variable (prefixed with @) or a method name
+  #current_user_getter: "current_user"
+  #current_account_getter: "@current_account"
+
 development:
   <<: *defaults
 

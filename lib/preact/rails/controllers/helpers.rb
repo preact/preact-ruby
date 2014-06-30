@@ -44,11 +44,10 @@ module Preact
 
       # helper method on the controller to make logging events easy
       def preact_log(event, account=nil)
-        if account
-          Preact.log_event(current_user, event, account)
-        else
-          Preact.log_event(current_user, event)
-        end
+        user = Preact.configuration.get_current_user(self) # handle nil
+        account ||= Preact.configuration.get_current_account(self) # handle nil
+
+        Preact.log_event(user, event, account)
 
         # make a note that we've logged an event on this controller
         @preact_logged_event = event
@@ -82,8 +81,8 @@ module Preact
   var _lnq = _lnq || [];
   _lnq.push(['_setCode', '#{Preact.configuration.code.to_s}']);
 
-  _lnq.push(['_setPersonData', #{Preact.configuration.convert_to_person(current_user).to_json}]);
-
+  _lnq.push(['_setPersonData', #{Preact.configuration.convert_to_person(Preact.configuration.get_current_user(self)).to_json}]);
+  _lnq.push(['_setAccount', #{Preact.configuration.convert_to_account(Preact.configuration.get_current_account(self)).to_json}]);
 
   (function() {
     var ln = document.createElement('script'); 
