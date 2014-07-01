@@ -54,10 +54,13 @@ module Preact
       end
 
       def inject_javascript
-        if body_end = response.body.index("</body")
-          script = build_script
-
-          response.body = response.body.insert(body_end, script)
+        if after_head_index = find_head_index(response.body)
+          script_lnq = lnq_definition_script
+          response.body = response.body.insert(after_head_index, script_lnq)
+          if body_end = response.body.index("</body")
+            script = build_script
+            response.body = response.body.insert(body_end, script)
+          end
         end
       end
 
@@ -80,7 +83,6 @@ module Preact
 <script>
   var _lnq = _lnq || [];
   _lnq.push(['_setCode', '#{Preact.configuration.code.to_s}']);
-
   _lnq.push(['_setPersonData', #{Preact.configuration.convert_to_person(Preact.configuration.get_current_user(self)).to_json}]);
   _lnq.push(['_setAccount', #{Preact.configuration.convert_to_account(Preact.configuration.get_current_account(self)).to_json}]);
 
@@ -93,6 +95,22 @@ module Preact
   })();
 </script>
 SCRIPT
+        end
+
+        def lnq_definition_script
+          script = <<-SCRIPT
+\n
+<script>
+  // Testing that the script is inserted correctly
+  var _lnq = _lnq || [];
+</script>
+SCRIPT
+        end
+
+        def find_head_index(response_body)
+          head_start = response_body.index("<head")
+          head_tag = response_body.match(/<head.*>/)[0]
+          head_start + head_tag.length
         end
 
         def guess_target_item_name(controller)
