@@ -101,16 +101,18 @@ SCRIPT
           script = <<-SCRIPT
 \n
 <script>
-  // Testing that the script is inserted correctly
   var _lnq = _lnq || [];
 </script>
 SCRIPT
         end
 
         def find_head_index(response_body)
-          head_start = response_body.index("<head")
-          head_tag = response_body.match(/<head.*>/)[0]
-          head_start + head_tag.length
+          if head_start = response_body.index("<head")
+            if head_tag = response_body.match(/<head.*>/)[0]
+              return head_start + head_tag.length
+            end
+          end
+          false
         end
 
         def guess_target_item_name(controller)
