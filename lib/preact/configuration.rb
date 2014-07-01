@@ -16,6 +16,7 @@ module Preact
     attr_accessor :sidekiq_queue
     attr_accessor :request_timeout
     attr_accessor :logging_mode
+    attr_accessor :allow_js_injection
 
     attr_accessor :current_user_getter
     attr_accessor :current_account_getter
@@ -41,6 +42,8 @@ module Preact
       @logging_mode = nil
       @sidekiq_queue = :default
       @request_timeout = 5
+
+      @allow_js_injection = true
 
       @current_user_getter = :current_user
       @current_account_getter = nil
@@ -92,6 +95,10 @@ module Preact
       end
 
       true
+    end
+
+    def allow_js_injection?
+      @allow_js_injection
     end
     
     def get_current_user(target)

@@ -54,6 +54,7 @@ module Preact
       end
 
       def inject_javascript
+        return unless Preact.configuration.allow_js_injection?
         if after_head_index = find_head_index(response.body)
           script_lnq = lnq_definition_script
           response.body = response.body.insert(after_head_index, script_lnq)
