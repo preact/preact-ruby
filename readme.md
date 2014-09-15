@@ -8,7 +8,7 @@ Installation
 In your Gemfile:
 
 ```ruby
-gem 'preact', "~> 1.0"
+gem 'preact', '~> 1.0'
 ```
 
 Then do a `bundle install` to get the gem.
@@ -18,25 +18,59 @@ Configuration
 
 In version 0.8.1 we added a rails generator to make it really easy to add the initializer and get you up and running.
 
-First, obtain your Preact Project Code and API Secret from the [API settings page](https://secure.preact.io/settings/api). Then, in your application directory, run the generator:
+First, obtain your Preact Project Code and API Secret from the [API settings page](https://secure.preact.com/settings/api). Then, in your application directory, run the generator:
 
 ```bash
 rails g preact your-code-1234 api-secret-xyzw
 ```
 
-That will generate a preact.rb initializer that looks something like this:
+That will generate an initializer and a preact.yml config that looks something like this:
 
 ```ruby
-Preact.configure do |config|
-  config.code   = 'your-code-1234'           # required
-  config.secret = 'api-secret-xyzw'  # required
-  
-  config.autolog = true
-  config.autolog_ignored_actions = ["sessions#create"]
 
-  # Disable in Rails development environments
-  # config.disabled = Rails.env.development?
-end
+Preact Logging Configs
+---
+production: &defaults
+
+  # your Preact API credentials
+  code: "your-code-1234"
+  secret: "api-secret-xyzw"
+
+  # automatically log controller actions for authed users
+  # disable this if you want to only log manual events
+  autolog: true
+
+  # specify controller#action items that you want to ignore and not log to Preact.
+  # default is to not log sessions#create beacuse if you're using Devise, we get that already
+  autolog_ignored_actions:
+    - "sessions#create"
+    - "devise/sessions#create"
+
+  # specify how to retrieve the current user and account from within the application controller
+  # you may use either an instance variable (prefixed with @) or a method name
+  #current_user_getter: "current_user"
+  #current_account_getter: "@current_account"
+
+development:
+  <<: *defaults
+
+  # we usually suggest that you use a different project for development, to keep
+  # those events separate from production events
+  #code: "DEV_CODE"
+  #secret: "DEV_SECRET"
+
+  # you may also completely disable event logging in development
+  #disabled: false
+
+staging:
+  <<: *defaults
+
+  # if you want to log staging events separately as well
+  #code: "STAGING_CODE"
+  #secret: "STAGING_SECRET"
+
+  # you may also completely disable event logging in staging
+  #disabled: false
 ```
 
 Now when you launch your app and do something as an authenticated user, you should see the activity in Preact.
@@ -61,10 +95,12 @@ config.autolog_ignored_actions = [
     "secret_pages#*" # ignores ALL actions on the secret_pages_controller
   ]
 ```
+Background Sending
+---
+By default, Preact uses [SuckerPunch](https://github.com/brandonhilkert/sucker_punch) to make sure nothing gets blocked while logging events to Preact in the background.
 
 Rails Controller Helper
 ---
-
 Since version 0.8.1, we include a helper method on the base controller called `preact_log` to make it convenient for you to log events directly.
 
 The helper is aware of the current_user and so only requires you to pass the event information as things occur. So for instance, you may log a simple event from one of yoru controllers like so:
@@ -126,32 +162,29 @@ The `event` parameter may be either a String if you just are passing the event n
 
 ```ruby
 person = {
-  :name => "Christopher Gooley",
-  :email => "gooley@foliohd.com",
-  :uid => "gooley",
-  :properties => {
-    :subscription_level => 4,
-    :subscription_level_name => "Pro",
-    :is_paying => true,
-    :created_at => 1347060566
-    :twitter => "gooley"
+  name: 'Christopher Gooley',
+  email: 'gooley@foliohd.com',
+  uid: 'gooley',
+  properties: {
+    created_at: 1347060566
+    twitter: 'gooley'
   }
 }
 
-#common event examples:
+##common event examples:
 Preact.log_event(person, 'logged-in')
 Preact.log_event(person, 'upgraded')
-Preact.log_event(person, { :name => 'processed:payment', :revenue => 900 }) # revenue specified in cents
-Preact.log_event(person, { :name => 'uploaded:file', :note => "awesome_resume.pdf" })
+Preact.log_event(person, { name: 'processed:payment', revenue: 900 }) # revenue specified in cents
+Preact.log_event(person, { name: 'uploaded:file', note: 'awesome_resume.pdf' })
 
 Preact.log_event(person, {
-    :name => 'purchased:item',
-    :note => "black shoes", 
-    :revenue => 2500, 
-    :extras => {
-      :category => "shoes",
-      :size => "13",
-      :color => "blue"
+    name: 'purchased:item',
+    note: 'black shoes', 
+    revenue: 2500, 
+    extras: {
+      category: 'shoes',
+      size: '13',
+      color: 'blue'
     })
 ```
 
@@ -159,9 +192,9 @@ If you are a Preact B2B user, you should also log the `account` that this event 
 
 ```ruby
 Preact.log_event(
-          { :email => "bob@honda.com", :name => "Bob Smith" }, # person
-          { :name => 'uploaded:file', :note => "awesome_resume.pdf" }, # event
-          { :id => 1234, :name => "Honda"} # account
+          { email: 'bob@honda.com', name: 'Bob Smith' }, # person
+          { name: 'uploaded:file', note: 'awesome_resume.pdf' }, # event
+          { id: 1234, name: 'Honda'} # account
         )
 ```
 
@@ -173,21 +206,20 @@ In your `User` model, you can define a `to_preact` method returning a Hash. Prea
 class User < ActiveRecord::Base
   def to_preact
     {
-      :name => self.name,
-      :email => self.email,
-      :uid => self.id,
-      :properties => {
-        :is_paying => self.paying_customer?,
-        :created_at => self.created_at.to_i
-      }
+      name: self.name,
+      email: self.email,
+      uid: self.id,
+      created_at: self.created_at.to_i
     }
   end
 end
 ```
 
+For a list of available built-in person fields, see the [API Docs](http://www.preact.com/api#person_object) Person Object section.
+
 ```ruby
 Preact.log_event(@current_user, 'restored_answer_data') 
-Preact.log_event(@current_user, { :name => 'updated-profile', :extras => {:twitter => "@gooley"} })
+Preact.log_event(@current_user, { name: 'updated-profile', extras: {twitter: '@gooley'} })
 ```
 
 #### B2B Account mapping method
@@ -198,23 +230,26 @@ Likewise, if you are a Preact B2B user, you can define the `to_preact` method on
 class Project < ActiveRecord::Base
   def to_preact
     {
-      :name => self.name,
-      :id => self.id
+      name: self.name,
+      id: self.id,
+      license_status: self.account_status
     }
   end
 end
 ```
 
+For a list of available built-in account fields, see the [API Docs](http://www.preact.com/api#account_object) Account Object section.
+
 Then, you just pass that model to the log_event method and we will associate the user's action with that account.
 
 ```ruby
 Preact.log_event(@current_user, 'restored_answer_data', @current_project) 
-Preact.log_event(@current_user, { :name => 'updated-profile', :extras => {:twitter => "@gooley"} }, @current_project)
+Preact.log_event(@current_user, { name: 'updated-profile', extras: {twitter: '@gooley'} }, @current_project)
 ```
 
 Sidekiq Integration
 ---
-Using [Sidekiq](http://sidekiq.org) for background processing? That's the best way to log data to Preact so it's not done in-process. 
+Using [Sidekiq](http://sidekiq.org) for background processing?
 
 All you need to do is add `require 'preact/sidekiq'` at the top of your `preact.rb` initializer and we'll take it from there. Jobs will be placed on the :default queue.
 
@@ -223,12 +258,9 @@ Devise / Warden Integration
 If you are using Warden, Preact will automatically log your login/logout events. 
 If when Preact loads, it notices that a ::Warden class is defined, it will require the preact/warden module which adds the appropriate hooks into Warden.
 
-Background Sending
-___
-By default, Preact uses [SuckerPunch](https://github.com/brandonhilkert/sucker_punch) to make sure nothing gets blocked.
 
 License
---
+---
 Copyright (c) 2011-2013 Christopher Gooley, Preact / Less Neglect, Inc. See LICENSE.txt for further details.
 
 Thanks to [Zach Millman](https://github.com/zmillman) for many contributions.
