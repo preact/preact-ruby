@@ -16,6 +16,7 @@ module Preact
     attr_accessor :sidekiq_queue
     attr_accessor :request_timeout
     attr_accessor :logging_mode
+    attr_accessor :inject_javascript
 
     attr_accessor :current_user_getter
     attr_accessor :current_account_getter
@@ -41,6 +42,8 @@ module Preact
       @logging_mode = nil
       @sidekiq_queue = :default
       @request_timeout = 5
+
+      @inject_javascript = false
 
       @current_user_getter = :current_user
       @current_account_getter = nil
@@ -73,6 +76,10 @@ module Preact
     
     def base_uri
       "#{scheme}://#{code}:#{secret}@#{host}#{base_path}"
+    end
+
+    def inject_javascript?
+      inject_javascript == true
     end
 
     def autolog_enabled?
@@ -158,7 +165,7 @@ module Preact
 
     def prepare_person_hash(person)
       return nil if person.nil?
-      
+
       if external_id = person[:external_identifier] || person["external_identifier"]
         person[:uid] ||= external_id
         person.delete(:external_identifier)

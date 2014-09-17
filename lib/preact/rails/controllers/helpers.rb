@@ -68,26 +68,33 @@ module Preact
         end
       end
 
-      ActiveSupport.on_load(:action_controller) do
-        after_filter :inject_javascript
+      if Preact.configuration.inject_javascript?
+        ActiveSupport.on_load(:action_controller) do
+          after_filter :inject_javascript
+        end
       end
-
 
       protected
 
         def build_script
           script = <<-SCRIPT
 <script>
-  var _lnq = _lnq || [];
-  _lnq.push(['_setCode', '#{Preact.configuration.code.to_s}']);
+  var _preactq = _preactq || [];
+  _preactq.push(['_setCode', '#{Preact.configuration.code.to_s}']);
+  _preactq.push(['_setPersonData', #{Preact.configuration.convert_to_person(Preact.configuration.get_current_user(self)).to_json}]);
+SCRIPT
+          if Preact.configuration.get_current_account(self)
+            script += <<-SCRIPT
+  _preactq.push(['_setAccount', #{Preact.configuration.convert_to_account(Preact.configuration.get_current_account(self)).to_json}]);
+SCRIPT
+          end
 
-  _lnq.push(['_setPersonData', #{Preact.configuration.convert_to_person(Preact.configuration.get_current_user(self)).to_json}]);
-  _lnq.push(['_setAccount', #{Preact.configuration.convert_to_account(Preact.configuration.get_current_account(self)).to_json}]);
-
+          script += <<-SCRIPT
+  _preactq.push(['_logEvent', '___loaded:preact']);
   (function() {
     var ln = document.createElement('script'); 
     ln.type = 'text/javascript'; ln.async = true;
-    ln.src = 'https://d2bbvl6dq48fa6.cloudfront.net/js/ln-2.4.min.js';
+    ln.src = 'https://d2bbvl6dq48fa6.cloudfront.net/js/preact-4.0.min.js';
     var s = document.getElementsByTagName('script')[0]; 
     s.parentNode.insertBefore(ln, s);
   })();
