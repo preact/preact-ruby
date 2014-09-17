@@ -8,7 +8,7 @@ Installation
 In your Gemfile:
 
 ```ruby
-gem 'preact', '~> 1.0'
+gem 'preact', '~> 1.0.1'
 ```
 
 Then do a `bundle install` to get the gem.
