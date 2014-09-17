@@ -157,6 +157,8 @@ module Preact
     end
 
     def prepare_person_hash(person)
+      return nil if person.nil?
+      
       if external_id = person[:external_identifier] || person["external_identifier"]
         person[:uid] ||= external_id
         person.delete(:external_identifier)

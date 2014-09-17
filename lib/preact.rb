@@ -108,22 +108,21 @@ module Preact
       end
 
       if event.is_a?(String)
-        preact_event = AccountEvent.new({
+        preact_event = {
             :name => event,
             :timestamp => Time.now.to_f
-          })
+          }
       elsif event.is_a?(Hash)
-        preact_event = AccountEvent.new(event)
-      elsif event.is_a?(AccountEvent)
         preact_event = event
       else
-        raise StandardError.new "Unknown event class, must pass a string event name, event hash or AccountEvent object"
+        raise StandardError.new "Unknown event class, must pass a string event name or event hash."
       end
 
       # attach the account info to the event
-      preact_event.account = configuration.convert_to_account(account)
+      preact_event[:account] = configuration.convert_to_account(account)
+      preact_event[:klass] = "accountevent"
       
-      send_log(nil, preact_event.as_json)
+      send_log(nil, preact_event)
     end
       
     def update_person(user)
@@ -163,7 +162,7 @@ module Preact
     protected
 
       def send_log(person, event=nil)
-        psn = person.to_hash
+        psn = person.nil? ? nil : person.to_hash
         evt = event.nil? ? nil : event.to_hash
 
         if defined?(Preact::Sidekiq) && (configuration.logging_mode.nil? || configuration.logging_mode == :sidekiq)
