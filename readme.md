@@ -166,7 +166,7 @@ person = {
   email: 'gooley@foliohd.com',
   uid: 'gooley',
   properties: {
-    created_at: 1347060566
+    created_at: 1347060566,
     twitter: 'gooley'
   }
 }
