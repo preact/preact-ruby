@@ -1,5 +1,5 @@
 ## Installing Preact for the first time?
-You probably should start with the [Quickstart](https://github.com/preact/preact-ruby/wiki/Preact-Ruby-Quickstart). It's the fastest way to get up and running step-by-step.
+You probably should **[start with the Quickstart](https://github.com/preact/preact-ruby/wiki/Preact-Ruby-Quickstart)**. It's the fastest way to get up and running step-by-step.
 
 The current implementation record is 14m33s to logging local development events and 45m to production. If you beat that, [tell us about it!](mailto:awesome@preact.com).
 
