@@ -113,7 +113,7 @@ module Preact
     end
 
     def get_current_account(target)
-      return nil if current_user_getter.nil?
+      return nil if current_account_getter.nil?
 
       if current_account_getter.to_s.starts_with?("@")
         # instance var
