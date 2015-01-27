@@ -94,7 +94,7 @@ SCRIPT
   (function() {
     var ln = document.createElement('script'); 
     ln.type = 'text/javascript'; ln.async = true;
-    ln.src = 'https://d2bbvl6dq48fa6.cloudfront.net/js/preact-4.0.min.js';
+    ln.src = 'https://d2bbvl6dq48fa6.cloudfront.net/js/preact-4.2.min.js';
     var s = document.getElementsByTagName('script')[0]; 
     s.parentNode.insertBefore(ln, s);
   })();
