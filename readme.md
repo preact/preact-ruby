@@ -110,7 +110,7 @@ Rails Controller Helper
 ---
 Since version 0.8.1, we include a helper method on the base controller called `preact_log` to make it convenient for you to log events directly.
 
-The helper is aware of the current_user and so only requires you to pass the event information as things occur. So for instance, you may log a simple event from one of yoru controllers like so:
+The helper is aware of the current_user and so only requires you to pass the event information as things occur. So for instance, you may log a simple event from one of your controllers like so:
 
 ```ruby
 class DocumentsController < ApplicationController
